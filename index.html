@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Веб-приложение с неоновым дворцом</title>
+<title>Веб-приложение с дворцом</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
@@ -24,12 +24,16 @@ body {
   display: none;
   flex-direction: column;
   align-items: center;
-  margin-top: 50px;
+  margin-top: 30px; /* отступ для экранов с формами */
+}
+
+#main-screen {
+  margin-top: 0; /* убираем отступ у главного экрана */
 }
 
 .login-box {
   background-color: #1b263b;
-  padding: 30px 20px;
+  padding: 25px 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -39,15 +43,15 @@ body {
 
 .login-box input {
   padding: 10px;
-  margin: 10px 0;
+  margin: 8px 0;
   border-radius: 8px;
   border: none;
-  width: 200px;
-  font-size: 16px;
+  width: 220px;
+  font-size: 15px;
 }
 
 .login-box button {
-  padding: 10px 20px;
+  padding: 8px 15px;
   border: none;
   border-radius: 12px;
   background-color: #3a5a96;
@@ -55,6 +59,8 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  width: 140px;
+  margin-top: 8px;
 }
 
 .login-box button:hover {
@@ -70,15 +76,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 
-.user-info { display: flex; gap: 25px; font-weight: bold; }
+.user-info { display: flex; gap: 20px; font-weight: bold; }
 
 .emoji-circle {
-  margin: 30px 0 20px;
-  width: 200px;
-  height: 200px;
+  margin: 25px 0 15px;
+  width: 260px;
+  height: 260px;
   background-color: #1b263b;
   border-radius: 50%;
   display: flex;
@@ -86,36 +93,61 @@ body {
   align-items: center;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 0 20px #ff7f50;
+  box-shadow: 0 0 15px #ff7f50;
   animation: neonPulse 2s infinite alternate;
 }
 
 .emoji-circle img {
-  width: 80%;
-  height: 80%;
+  width: 85%;
+  height: 85%;
   object-fit: contain;
-  border-radius: 12px;
 }
 
 @keyframes neonPulse {
-  0% { box-shadow: 0 0 10px #ff7f50, 0 0 20px #ff7f50, 0 0 30px #ff7f50; }
-  50% { box-shadow: 0 0 20px #ffa04d, 0 0 30px #ff9a3d, 0 0 40px #ff8f2b; }
-  100% { box-shadow: 0 0 10px #ff7f50, 0 0 20px #ff7f50, 0 0 30px #ff7f50; }
+  0% { box-shadow: 0 0 8px #ff7f50, 0 0 15px #ff7f50; }
+  50% { box-shadow: 0 0 12px #ffa04d, 0 0 20px #ff9a3d; }
+  100% { box-shadow: 0 0 8px #ff7f50, 0 0 15px #ff7f50; }
 }
 
-.level-bar { display:flex; justify-content:center; gap:8px; margin-bottom:30px; font-size:24px; }
+.level-bar { 
+  display:flex; 
+  justify-content:center; 
+  gap:5px; 
+  margin-bottom:20px; 
+  font-size:18px; 
+}
 .level-bar span { opacity:0.15; transition:opacity 0.3s; }
-.level-bar span.active { opacity:1; text-shadow:0 0 5px #fff,0 0 10px #0ff; }
+.level-bar span.active { opacity:1; text-shadow:0 0 4px #fff,0 0 7px #0ff; }
 
-.button-container { display:flex; gap:15px; margin-bottom:30px; padding:0 15px; flex-wrap:wrap; justify-content:center; box-sizing:border-box; }
+.button-container { 
+  display:grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap:12px; 
+  margin-bottom:20px; 
+  padding:0 15px; 
+  width:100%; 
+  max-width: 500px;
+  box-sizing:border-box; 
+}
 
 .neon {
-  padding:12px 20px; font-size:16px; border:none; border-radius:12px; cursor:pointer; font-weight:bold;
-  color:#fff; background:rgba(255,255,255,0.08); box-shadow:0 0 10px #ff00ff,0 0 20px #00ffff,0 0 30px #ff00ff;
-  transition: transform 0.3s, box-shadow 0.3s; flex:1 1 auto; min-width:120px; text-align:center;
+  padding:10px; 
+  font-size:14px; 
+  border:none; 
+  border-radius:10px; 
+  cursor:pointer; 
+  font-weight:bold;
+  color:#fff; 
+  background:rgba(255,255,255,0.08); 
+  text-align:center;
+  transition: transform 0.3s, box-shadow 0.3s; 
+  box-shadow: 0 0 6px red, 0 0 8px orange, 0 0 10px yellow, 0 0 12px green, 0 0 14px blue, 0 0 16px indigo, 0 0 18px violet;
 }
 
-.neon:hover { transform: translateY(-3px); box-shadow:0 0 15px #ff00ff,0 0 30px #00ffff,0 0 45px #ff00ff; }
+.neon:hover { 
+  transform: translateY(-3px); 
+  box-shadow: 0 0 10px red, 0 0 12px orange, 0 0 14px yellow, 0 0 16px green, 0 0 18px blue, 0 0 20px indigo, 0 0 22px violet;
+}
 
 .content {
   width: calc(100% - 30px);
@@ -138,29 +170,78 @@ body {
 }
 
 .sub-buttons button {
-  flex: 1 1 120px;
+  flex: 1 1 100px;
   background: rgba(255,255,255,0.05);
   color: #fff;
   font-weight: bold;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
-  padding: 10px;
+  padding: 8px;
   cursor:pointer;
-  box-shadow:0 0 8px #ff00ff,0 0 15px #0ff;
+  box-shadow:0 0 4px red, 0 0 6px orange, 0 0 8px yellow, 0 0 10px green, 0 0 12px blue, 0 0 14px indigo, 0 0 16px violet;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.sub-buttons button:hover { transform: translateY(-2px); box-shadow:0 0 15px #ff00ff,0 0 25px #0ff; }
+.sub-buttons button:hover { 
+  transform: translateY(-2px); 
+  box-shadow:0 0 8px red, 0 0 10px orange, 0 0 12px yellow, 0 0 14px green, 0 0 16px blue, 0 0 18px indigo, 0 0 20px violet;
+}
 
+.toggle-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.toggle-buttons button {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  color:#fff;
+  font-weight:bold;
+  border:none;
+  border-radius:10px;
+  padding:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.toggle-buttons button:hover {
+  box-shadow: 0 0 8px red, 0 0 12px orange, 0 0 16px yellow, 0 0 20px green, 0 0 24px blue, 0 0 28px indigo, 0 0 32px violet;
+}
+
+@media(max-width:500px){
+  .button-container { grid-template-columns: repeat(2,1fr); }
+}
 </style>
 </head>
 <body>
 
-<div class="screen" id="login-screen" style="display:flex;">
+<div class="screen" id="auth-choice-screen" style="display:flex; flex-direction:column; align-items:center;">
+  <h2>Выберите действие</h2>
+  <div class="toggle-buttons">
+    <button onclick="showForm('login')">Авторизация</button>
+    <button onclick="showForm('register')">Регистрация</button>
+  </div>
+</div>
+
+<div class="screen" id="login-screen">
   <div class="login-box">
     <h2>Авторизация</h2>
-    <input type="text" id="username" placeholder="Введите имя">
+    <input type="text" id="login-username" placeholder="Логин">
+    <input type="password" id="login-password" placeholder="Пароль">
     <button onclick="login()">Войти</button>
+    <button onclick="backToChoice()">Назад</button>
+  </div>
+</div>
+
+<div class="screen" id="register-screen">
+  <div class="login-box">
+    <h2>Регистрация</h2>
+    <input type="text" id="reg-username" placeholder="Логин">
+    <input type="password" id="reg-password" placeholder="Пароль">
+    <input type="text" id="reg-alliance" placeholder="Имя альянса">
+    <button onclick="register()">Зарегистрироваться</button>
+    <button onclick="backToChoice()">Назад</button>
   </div>
 </div>
 
@@ -174,7 +255,7 @@ body {
   </div>
 
   <div class="emoji-circle">
-    <img src="123.png" alt="Дворец">
+    <img src="https://raw.githubusercontent.com/vanisan111/app/app/castle.png" alt="Дворец">
   </div>
 
   <div class="level-bar" id="level-bar"></div>
@@ -184,6 +265,8 @@ body {
     <button class="neon" onclick="showContent('referrals')">Рефералы</button>
     <button class="neon" onclick="showContent('balance')">Баланс</button>
     <button class="neon" onclick="showContent('rating')">Рейтинг</button>
+    <button class="neon" onclick="showContent('shop')">Магазин</button>
+    <button class="neon" onclick="showContent('alliance')">Мой альянс</button>
   </div>
 
   <div class="content" id="content-box">
@@ -192,6 +275,21 @@ body {
 </div>
 
 <script>
+function showForm(type){
+  document.getElementById('auth-choice-screen').style.display='none';
+  if(type==='login'){
+    document.getElementById('login-screen').style.display='flex';
+  } else {
+    document.getElementById('register-screen').style.display='flex';
+  }
+}
+
+function backToChoice(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('register-screen').style.display='none';
+  document.getElementById('auth-choice-screen').style.display='flex';
+}
+
 function renderLevel(current,max=10){
   const bar=document.getElementById("level-bar");
   bar.innerHTML="";
@@ -204,9 +302,18 @@ function renderLevel(current,max=10){
 }
 
 function login(){
-  const username=document.getElementById("username").value||"Игрок";
+  const username=document.getElementById("login-username").value||"Игрок";
   document.getElementById("navbar-username").innerText="👤 "+username;
   document.getElementById("login-screen").style.display="none";
+  document.getElementById("main-screen").style.display="flex";
+  renderLevel(1,10);
+}
+
+function register(){
+  const username=document.getElementById("reg-username").value||"Игрок";
+  const alliance=document.getElementById("reg-alliance").value||"-";
+  document.getElementById("navbar-username").innerText="👤 "+username+" ["+alliance+"]";
+  document.getElementById("register-screen").style.display="none";
   document.getElementById("main-screen").style.display="flex";
   renderLevel(1,10);
 }
@@ -239,11 +346,13 @@ function showContent(type){
     contentBox.appendChild(subButtons);
   } else if(type==='rating'){
     mainText.innerHTML="🏆 <b>Рейтинг</b><br><br> Вы пока не в рейтинге.";
+  } else if(type==='shop'){
+    mainText.innerHTML="🛒 <b>Магазин</b><br><br> Здесь будут товары.";
+  } else if(type==='alliance'){
+    mainText.innerHTML="⚔️ <b>Мой альянс</b><br><br> Здесь будет информация об альянсе.";
   }
 }
 </script>
 
 </body>
 </html>
-
-
