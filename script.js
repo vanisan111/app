@@ -171,4 +171,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
     if(referrals[refID]){ console.log('Ref param', refID, 'is known:', referrals[refID]); }
     else { console.log('Ref param present but unknown:', refID); }
   }
+
+let energy = 100;
+const maxEnergy = 100;
+
+// Энергия реген
+setInterval(()=>{
+  if(energy < maxEnergy) {
+    energy++;
+    updateEnergyDisplay();
+  }
+}, 5000);
+
+// Создаем элемент для отображения энергии
+const palace = document.querySelector('.emoji-circle');
+const energyDisplay = document.createElement('div');
+energyDisplay.id = 'energy-display';
+energyDisplay.innerText = `⚡ Энергия: ${energy}`;
+palace.appendChild(energyDisplay);
+
+function updateEnergyDisplay(){
+  energyDisplay.innerText = `⚡ Энергия: ${energy}`;
+}
+
+// Функция тапа по дворцу
+palace.addEventListener('click', ()=>{
+  if(energy < 2) { alert('Недостаточно энергии!'); return; }
+  energy -= 2;
+  BR += 0.05;
+  updateEnergyDisplay();
+  updateBR();
+  showSwordAnimation();
 });
+
+// Анимация мечей
+function showSwordAnimation(){
+  const sword = document.createElement('div');
+  sword.className = 'sword-tap';
+  sword.innerText = '⚔️';
+  sword.style.left = (50 + (Math.random()*40-20)) + '%'; // немного рандомим позицию
+  palace.appendChild(sword);
+  setTimeout(()=>{ sword.remove(); }, 800);
+}
+
+});
+
