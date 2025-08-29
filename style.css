@@ -1,3 +1,4 @@
+/* === Общие стили === */
 body {
   font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
@@ -19,7 +20,22 @@ body {
 
 #auth-choice-screen { display:flex; flex-direction:column; align-items:center; }
 
-.login-box, .auth-box {
+/* === Стартовый экран === */
+.start-box {
+  background: linear-gradient(160deg,#0f1a36,#182147);
+  padding:20px;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  box-shadow:0 6px 18px rgba(0,0,0,0.65);
+}
+.start-img { max-width:180px; margin-bottom:14px; display:block; }
+.start-title { margin:0 0 14px; color:gold; text-shadow:0 0 10px rgba(255,215,0,0.9); font-size:26px; }
+.start-buttons { flex-direction:column; width:100%; align-items:center; }
+
+/* === Логин / регистрация === */
+.login-box {
   background: linear-gradient(145deg,#0f1a36,#182147);
   padding: 25px 20px;
   border-radius: 14px;
@@ -28,7 +44,6 @@ body {
   align-items: center;
   box-shadow: 0 6px 20px rgba(0,0,0,0.7);
 }
-
 .login-box input {
   padding: 10px;
   margin: 8px 0;
@@ -37,8 +52,7 @@ body {
   width: 220px;
   font-size: 15px;
 }
-
-.login-box button, .toggle-buttons button {
+.login-box button {
   padding: 8px 15px;
   border: none;
   border-radius: 14px;
@@ -50,12 +64,10 @@ body {
   width: 140px;
   margin-top: 8px;
 }
+.login-box button:hover { transform: translateY(-2px); box-shadow: 0 0 12px #002b70,0 0 20px #004080; }
+.login-buttons { display:flex; gap:10px; margin-top:10px; }
 
-.login-box button:hover, .toggle-buttons button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 12px #002b70,0 0 20px #004080;
-}
-
+/* === Navbar === */
 .navbar {
   width: 100%;
   background: linear-gradient(90deg,#00102b,#001f4d);
@@ -67,10 +79,10 @@ body {
   box-sizing: border-box;
   box-shadow: 0 2px 6px rgba(0,0,0,0.7);
 }
-
 .user-info { display: flex; gap: 20px; font-weight: bold; }
 #navbar-br { color: gold; font-weight: bold; text-shadow: 0 0 5px gold, 0 0 10px orange; }
 
+/* === Круг с дворцом === */
 .emoji-circle {
   margin: 25px 0 15px;
   width: 260px;
@@ -86,19 +98,25 @@ body {
   box-shadow: 0 0 20px #001f4d,0 0 40px #002b70;
 }
 .emoji-circle img { width: 85%; height: 85%; object-fit: contain; }
+@keyframes neonPulse { 0% { box-shadow: 0 0 10px #001f4d,0 0 12px #002b70; } 100% { box-shadow: 0 0 14px #001f4d,0 0 18px #002b70; } }
 
-@keyframes neonPulse { 0% { box-shadow:0 0 10px #001f4d,0 0 12px #002b70;} 100% { box-shadow:0 0 14px #001f4d,0 0 18px #002b70;} }
-
+/* === Уровень === */
 .level-container { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
 .level-bar { display:flex; justify-content:center; gap:5px; font-size:18px; }
 .level-bar span { opacity:0.15; transition:opacity 0.3s; }
 .level-bar span.active { opacity:1; text-shadow:0 0 4px #fff,0 0 7px #0ff; }
 .level-progress { height:16px; width:120px; border-radius:8px; background: linear-gradient(90deg,#004080,#0070c0); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#fff; }
 
+/* === Кнопки === */
 .button-container { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:20px; padding:0 15px; width:100%; max-width:500px; box-sizing:border-box; }
-.neon { padding:10px; font-size:14px; border:none; border-radius:14px; cursor:pointer; font-weight:bold; color:#fff; background: linear-gradient(145deg, #001f4d,#003366); text-align:center; transition: transform 0.3s, box-shadow 0.3s; }
+.neon {
+  padding:10px; font-size:14px; border:none; border-radius:14px; cursor:pointer; font-weight:bold; color:#fff;
+  background: linear-gradient(145deg, #001f4d,#003366); text-align:center; transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 4px rgba(0,80,160,0.2), 0 0 6px rgba(0,50,120,0.2);
+}
 .neon:hover { transform: translateY(-2px); box-shadow: 0 0 8px rgba(0,80,160,0.5), 0 0 12px rgba(0,50,120,0.5); }
 
+/* === Контент === */
 .content {
   width: calc(100% - 30px);
   background: linear-gradient(145deg,#00102b,#001f4d);
@@ -112,13 +130,27 @@ body {
   overflow-x:auto;
 }
 
-table { width:100%; border-collapse: collapse; margin-top:10px; color:#fff; }
-th, td { border:1px solid rgba(255,255,255,0.2); padding:6px; text-align:center; }
-th { background: rgba(255,255,255,0.05); }
-
+/* === Подкнопки === */
 .sub-buttons { display:flex; gap:10px; margin-top:15px; justify-content:flex-start; flex-wrap:wrap; }
 .sub-buttons button { flex:1 1 100px; background: linear-gradient(145deg,#001f4d,#003366); color:#fff; font-weight:bold; border-radius:10px; border:none; padding:8px; cursor:pointer; box-shadow:0 0 4px #002b70,0 0 6px #004080; transition: transform 0.2s, box-shadow 0.2s; }
 .sub-buttons button:hover { transform: translateY(-2px); box-shadow:0 0 8px #002b70,0 0 12px #004080; }
 
 .toggle-buttons { display:flex; gap:15px; margin-bottom:15px; }
-.toggle-buttons button { flex:1; }
+.toggle-buttons button { flex:1; background: linear-gradient(145deg,#001f4d,#003366); color:#fff; font-weight:bold; border:none; border-radius:14px; padding:8px; cursor:pointer; transition:0.3s; }
+.toggle-buttons button:hover { box-shadow:0 0 8px #002b70,0 0 12px #004080; }
+
+/* === Таблица === */
+table { width:100%; border-collapse: collapse; margin-top:10px; color:#fff; }
+th, td { border:1px solid rgba(255,255,255,0.2); padding:6px; text-align:center; }
+th { background: rgba(255,255,255,0.05); }
+
+/* === Магазин 3x3 === */
+.shop-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; margin-top:10px; }
+.shop-grid div { background-color:#002b70; opacity:0.1; width:40px; height:40px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; }
+.shop-grid div.owned { opacity:1; background: linear-gradient(145deg,#003366,#0055a0); }
+
+/* === Адаптив === */
+@media(max-width:500px){
+  .button-container { grid-template-columns: repeat(2,1fr); }
+  .emoji-circle{width:220px;height:220px;}
+}
