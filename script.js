@@ -1,100 +1,201 @@
-let balance = 10;
-let BR = 100;
-let level = 0;
-let playerID = Math.floor(Math.random()*90000 + 10000);
-let referrals = {};
-let lands = [true,false,false,false,false,false,false,false,false];
+// =======================
+// Глобальные переменные
+// =======================
+let currentUser = null;
 
-function showForm(type){
-  document.getElementById('auth-choice-screen').style.display='none';
-  if(type === 'login') document.getElementById('login-screen').style.display='flex';
-  else document.getElementById('register-screen').style.display='flex';
-}
-function backToChoice(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('register-screen').style.display='none';
-  document.getElementById('auth-choice-screen').style.display='flex';
+// =======================
+// Навигация между экранами
+// =======================
+function showForm(type) {
+  document.getElementById("auth-choice-screen").style.display = "none";
+  document.getElementById("login-screen").style.display = type === "login" ? "flex" : "none";
+  document.getElementById("register-screen").style.display = type === "register" ? "flex" : "none";
 }
 
-function renderLevel(current, max=10){
-  level = current;
-  const bar = document.getElementById('level-bar');
-  const progress = document.getElementById('level-progress');
-  bar.innerHTML = '';
-  for(let i=1;i<=max;i++){
-    const s = document.createElement('span');
-    s.innerText = '👤';
-    if(i <= current) s.classList.add('active');
-    bar.appendChild(s);
-  }
-  progress.innerText = current + ' / ' + max;
-}
-function updateBR(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + BR.toFixed(1);
+function backToChoice() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("register-screen").style.display = "none";
+  document.getElementById("auth-choice-screen").style.display = "flex";
 }
 
-function login(){
-  const username = document.getElementById('login-username').value || 'Игрок';
-  document.getElementById('navbar-username').innerText = '👤 ' + username;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
-}
-function register(){
-  const username = document.getElementById('reg-username').value || 'Игрок';
-  const alliance = document.getElementById('reg-alliance').value || '-';
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){ referrals[refID] = username; }
-  document.getElementById('navbar-username').innerText = '👤 ' + username + ' [' + alliance + ']';
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
+// =======================
+// Авторизация
+// =======================
+function login() {
+  const username = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+
+  if (!username || !password) {
+    alert("Введите логин и пароль!");
+    return;
+  }
+
+  // временно — фейковый юзер
+  currentUser = {
+    username: username,
+    level: 1,
+    xp: 0,
+    maxXp: 10,
+    referrals: 0,
+    br: 100,
+    balance: 0
+  };
+
+  updateNavbar();
+  updateLevelBar();
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("main-screen").style.display = "block";
 }
 
-/* Tabs content */
-function showContent(type){
-  const contentBox = document.getElementById('content-box');
-  contentBox.innerHTML = '<div id="main-text"></div>';
-  const mainText = document.getElementById('main-text');
+function register() {
+  const username = document.getElementById("reg-username").value;
+  const password = document.getElementById("reg-password").value;
+  const alliance = document.getElementById("reg-alliance").value;
 
-  if(type === 'palace'){
-    mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
-      👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
-      🤝 Рефер мастер: - <br>
-      💰 Баланс (TON): ${balance}<br>
-      📅 Дата регистрации: ${new Date().toLocaleDateString()}<br>
-      🆔 Telegram ID: #${playerID}<br>
-      ⚔️ BR: ${BR.toFixed(1)}`;
+  if (!username || !password || !alliance) {
+    alert("Заполните все поля!");
+    return;
   }
-  else if(type === 'referrals'){
-    mainText.innerHTML = `👥 <b>Рефералы</b><br><br>
-      Ваш ID: <input type="text" id="player-id" value="${playerID}" readonly style="width:120px;">
-      <button onclick="copyReferral()">Копировать ссылку</button>
-      <div id="ref-list" style="margin-top:10px;"></div>`;
-    updateReferralList();
+
+  // временно — регистрация = сразу вход
+  currentUser = {
+    username: username,
+    level: 1,
+    xp: 0,
+    maxXp: 10,
+    referrals: 0,
+    br: 100,
+    balance: 0,
+    alliance: alliance
+  };
+
+  updateNavbar();
+  updateLevelBar();
+
+  document.getElementById("register-screen").style.display = "none";
+  document.getElementById("main-screen").style.display = "block";
+}
+
+// =======================
+// Обновление интерфейса
+// =======================
+function updateNavbar() {
+  document.getElementById("navbar-username").innerText = "👤 " + currentUser.username;
+  document.getElementById("navbar-level").innerText = "🏆 Lv." + currentUser.level;
+  document.getElementById("navbar-referrals").innerText = "👥 " + currentUser.referrals;
+  document.getElementById("navbar-br").innerText = "⚔️ BR: " + currentUser.br;
+}
+
+function updateLevelBar() {
+  const percent = (currentUser.xp / currentUser.maxXp) * 100;
+  document.getElementById("level-bar").style.width = percent + "%";
+  document.getElementById("level-progress").innerText = currentUser.xp + " / " + currentUser.maxXp;
+}
+
+// =======================
+// Контент по кнопкам
+// =======================
+function showContent(type) {
+  let content = "";
+
+  switch(type) {
+    case "palace":
+      content = `
+        <h3>🏰 Дворец</h3>
+        <p>Здесь вы управляете своим альянсом.</p>
+        <button onclick="gainXp()">💪 Тренироваться (+XP)</button>
+      `;
+      break;
+
+    case "referrals":
+      content = `
+        <h3>👥 Рефералы</h3>
+        <p>У вас ${currentUser.referrals} рефералов.</p>
+        <button onclick="addReferral()">➕ Добавить реферала</button>
+      `;
+      break;
+
+    case "balance":
+      content = `
+        <h3>💰 Баланс</h3>
+        <p>Ваш баланс: ${currentUser.balance} монет.</p>
+        <button onclick="earnCoins()">💵 Заработать 10 монет</button>
+      `;
+      break;
+
+    case "rating":
+      content = `
+        <h3>🏆 Рейтинг</h3>
+        <ol>
+          <li>Игрок1 — Lv.10</li>
+          <li>Игрок2 — Lv.8</li>
+          <li>${currentUser.username} — Lv.${currentUser.level}</li>
+        </ol>
+      `;
+      break;
+
+    case "shop":
+      content = `
+        <h3>🛒 Магазин</h3>
+        <p>Баланс: ${currentUser.balance} монет.</p>
+        <button onclick="buyItem(50)">Купить Меч (50)</button>
+        <button onclick="buyItem(100)">Купить Щит (100)</button>
+      `;
+      break;
+
+    case "rules":
+      content = `
+        <h3>📜 Правила</h3>
+        <ul>
+          <li>1. Уважайте других игроков</li>
+          <li>2. Не используйте читы</li>
+          <li>3. Играйте честно</li>
+        </ul>
+      `;
+      break;
+
+    default:
+      content = "❓ Неизвестный раздел";
   }
-  else if(type === 'balance'){
-    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${balance} TON.`;
-    const sub = document.createElement('div');
-    sub.className = 'sub-buttons';
-    sub.innerHTML = `<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
-    contentBox.appendChild(sub);
+
+  document.getElementById("content-box").innerHTML = content;
+}
+
+// =======================
+// Игровая логика
+// =======================
+function gainXp() {
+  currentUser.xp++;
+  if (currentUser.xp >= currentUser.maxXp) {
+    currentUser.level++;
+    currentUser.xp = 0;
+    currentUser.maxXp = Math.floor(currentUser.maxXp * 1.5);
+    currentUser.br += 50; // бонус силы
   }
-  else if(type === 'rating'){
-    mainText.innerHTML = `🏆 <b>Рейтинг</b><br><br>`;
-    const table = document.createElement('table');
-    table.innerHTML = `<thead><tr><th>№</th><th>Имя</th><th>Боевая сила</th><th>Участники</th></tr></thead>
-      <tbody>
-      ${Array.from({length:10},(_,i)=>`<tr><td>${i+1}</td><td>Игрок${i+1}</td><td>${Math.floor(Math.random()*1000)+100}</td><td>${Math.floor(Math.random()*50)+1}</td></tr>`).join('')}
-      </tbody>`;
-    contentBox.appendChild(table);
+  updateNavbar();
+  updateLevelBar();
+  showContent("palace");
+}
+
+function addReferral() {
+  currentUser.referrals++;
+  currentUser.balance += 20; // бонус за друга
+  updateNavbar();
+  showContent("referrals");
+}
+
+function earnCoins() {
+  currentUser.balance += 10;
+  showContent("balance");
+}
+
+function buyItem(cost) {
+  if (currentUser.balance >= cost) {
+    currentUser.balance -= cost;
+    alert("Покупка успешна! 🛡️");
+  } else {
+    alert("Не хватает монет!");
   }
-  else if(type === 'shop'){
-    mainText.innerHTML = `🛒 <b>Магазин</b><br><br>`;
-    const shopDiv = document.createElement('div');
-    shopDiv.className = 'sub-buttons';
-    shopDiv.innerHTML = `
-      <button onclick
+  showContent("shop");
+}
