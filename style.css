@@ -137,9 +137,12 @@ th { background: rgba(255,255,255,0.05); }
 .shop-grid div.owned { opacity:1; background: linear-gradient(145deg,#003366,#0055a0); }
 
 /* адаптив */
-@media(max-width:500px){ .button-container { grid-template-columns: repeat(2,1fr); } .emoji-circle{width:220px;height:220px;} }
+@media(max-width:500px){ 
+  .button-container { grid-template-columns: repeat(2,1fr); } 
+  .emoji-circle{width:220px;height:220px;} 
+}
 
-/* Анимация мечей при тапе */
+/* === Анимация мечей при тапе по дворцу === */
 .sword-tap {
   position: absolute;
   font-size: 24px;
@@ -153,7 +156,7 @@ th { background: rgba(255,255,255,0.05); }
   100% { opacity: 0; transform: translateY(-60px) rotate(20deg); }
 }
 
-/* Энергия на экране */
+/* Энергия над дворцом */
 #energy-display {
   position: absolute;
   top: 10px;
@@ -163,5 +166,4 @@ th { background: rgba(255,255,255,0.05); }
   font-weight: bold;
   text-shadow: 0 0 6px #0ff, 0 0 12px #00ffff;
 }
-
 
