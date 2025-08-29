@@ -1,166 +1,23 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RefAliance — полный</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RefAliance — полный</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
-<style>
-/* === Премиальный тёмно-синий дизайн — восстановлен === */
-body {
-  font-family: 'Poppins', Arial, sans-serif;
-  margin: 0;
-  background-color: #0a0f23;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* общий контейнер-экран */
-.screen {
-  width: 100%;
-  max-width: 600px;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 30px;
-}
-
-/* стартовый экран (auth-choice) — видим по умолчанию */
-#auth-choice-screen { display:flex; flex-direction:column; align-items:center; }
-
-/* логин/регистрация */
-.login-box {
-  background: linear-gradient(145deg,#0f1a36,#182147);
-  padding: 25px 20px;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.7);
-}
-.login-box input {
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 8px;
-  border: none;
-  width: 220px;
-  font-size: 15px;
-}
-.login-box button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 14px;
-  background: linear-gradient(135deg,#001f4d,#003366);
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-  width: 140px;
-  margin-top: 8px;
-}
-.login-box button:hover { transform: translateY(-2px); box-shadow: 0 0 12px #002b70,0 0 20px #004080; }
-
-/* navbar */
-.navbar {
-  width: 100%;
-  background: linear-gradient(90deg,#00102b,#001f4d);
-  color: white;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.7);
-}
-.user-info { display: flex; gap: 20px; font-weight: bold; }
-#navbar-br { color: gold; font-weight: bold; text-shadow: 0 0 5px gold, 0 0 10px orange; }
-
-/* круг с дворцом — градиентный фон */
-.emoji-circle {
-  margin: 25px 0 15px;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
-  background: radial-gradient(circle at center, #001a40, #001f4d);
-  animation: neonPulse 2s infinite alternate;
-  box-shadow: 0 0 20px #001f4d,0 0 40px #002b70;
-}
-.emoji-circle img { width: 85%; height: 85%; object-fit: contain; }
-@keyframes neonPulse { 0% { box-shadow: 0 0 10px #001f4d,0 0 12px #002b70; } 100% { box-shadow: 0 0 14px #001f4d,0 0 18px #002b70; } }
-
-/* уровень (10 человечков) + маленький прогресс */
-.level-container { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
-.level-bar { display:flex; justify-content:center; gap:5px; font-size:18px; }
-.level-bar span { opacity:0.15; transition:opacity 0.3s; }
-.level-bar span.active { opacity:1; text-shadow:0 0 4px #fff,0 0 7px #0ff; }
-.level-progress { height:16px; width:120px; border-radius:8px; background: linear-gradient(90deg,#004080,#0070c0); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#fff; }
-
-/* кнопки 3x2 */
-.button-container { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:20px; padding:0 15px; width:100%; max-width:500px; box-sizing:border-box; }
-.neon {
-  padding:10px; font-size:14px; border:none; border-radius:14px; cursor:pointer; font-weight:bold; color:#fff;
-  background: linear-gradient(145deg, #001f4d,#003366); text-align:center; transition: transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 0 4px rgba(0,80,160,0.2), 0 0 6px rgba(0,50,120,0.2);
-}
-.neon:hover { transform: translateY(-2px); box-shadow: 0 0 8px rgba(0,80,160,0.5), 0 0 12px rgba(0,50,120,0.5); }
-
-/* контент-блок */
-.content {
-  width: calc(100% - 30px);
-  background: linear-gradient(145deg,#00102b,#001f4d);
-  padding:20px;
-  margin:0 15px;
-  border-radius:14px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.7);
-  min-height:150px;
-  box-sizing:border-box;
-  position:relative;
-  overflow-x:auto;
-}
-
-/* под-кнопки */
-.sub-buttons { display:flex; gap:10px; margin-top:15px; justify-content:flex-start; flex-wrap:wrap; }
-.sub-buttons button { flex:1 1 100px; background: linear-gradient(145deg,#001f4d,#003366); color:#fff; font-weight:bold; border-radius:10px; border:none; padding:8px; cursor:pointer; box-shadow:0 0 4px #002b70,0 0 6px #004080; transition: transform 0.2s, box-shadow 0.2s; }
-.sub-buttons button:hover { transform: translateY(-2px); box-shadow:0 0 8px #002b70,0 0 12px #004080; }
-
-.toggle-buttons { display:flex; gap:15px; margin-bottom:15px; }
-.toggle-buttons button { flex:1; background: linear-gradient(145deg,#001f4d,#003366); color:#fff; font-weight:bold; border:none; border-radius:14px; padding:8px; cursor:pointer; transition:0.3s; }
-.toggle-buttons button:hover { box-shadow:0 0 8px #002b70,0 0 12px #004080; }
-
-/* таблица рейтинга */
-table { width:100%; border-collapse: collapse; margin-top:10px; color:#fff; }
-th, td { border:1px solid rgba(255,255,255,0.2); padding:6px; text-align:center; }
-th { background: rgba(255,255,255,0.05); }
-
-/* сетка земель 3x3 */
-.shop-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; margin-top:10px; }
-.shop-grid div { background-color:#002b70; opacity:0.1; width:40px; height:40px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; }
-.shop-grid div.owned { opacity:1; background: linear-gradient(145deg,#003366,#0055a0); }
-
-/* адаптив */
-@media(max-width:500px){ .button-container { grid-template-columns: repeat(2,1fr); } .emoji-circle{width:220px;height:220px;} }
-</style>
+  <!-- Подключение CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- === стартовый экран: только он изменён (изображение + RefAliance + вертикальные кнопки) === -->
+<!-- === стартовый экран === -->
 <div class="screen" id="auth-choice-screen" style="display:flex; flex-direction:column; align-items:center;">
-  <div style="background: linear-gradient(160deg,#0f1a36,#182147); padding:20px; border-radius:12px; display:flex; flex-direction:column; align-items:center; box-shadow:0 6px 18px rgba(0,0,0,0.65);">
-    <!-- картинка из репо (используем raw URL, чтобы работало как изображение) -->
-    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" style="max-width:180px; margin-bottom:14px; display:block;">
-    <!-- заголовок RefAliance золотым -->
-    <h2 style="margin:0 0 14px; color:gold; text-shadow:0 0 10px rgba(255,215,0,0.9); font-size:26px;">RefAliance</h2>
-
-    <!-- кнопки одна под другой -->
+  <div class="auth-box">
+    <img src="img/king.png" alt="King" class="logo-img">
+    <h2 class="title">RefAliance</h2>
     <div class="toggle-buttons" style="flex-direction:column; width:100%; align-items:center;">
       <button onclick="showForm('login')" style="width:220px; margin-bottom:8px;">Авторизация</button>
       <button onclick="showForm('register')" style="width:220px;">Регистрация</button>
@@ -168,34 +25,34 @@ th { background: rgba(255,255,255,0.05); }
   </div>
 </div>
 
-<!-- === Login экран (не тронут) === -->
+<!-- === Login экран === -->
 <div class="screen" id="login-screen">
   <div class="login-box">
     <h2>Авторизация</h2>
     <input type="text" id="login-username" placeholder="Логин">
     <input type="password" id="login-password" placeholder="Пароль">
-    <div style="display:flex; gap:10px; margin-top:10px;">
+    <div class="btn-row">
       <button onclick="login()">Войти</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
   </div>
 </div>
 
-<!-- === Register экран (не тронут) === -->
+<!-- === Register экран === -->
 <div class="screen" id="register-screen">
   <div class="login-box">
     <h2>Регистрация</h2>
     <input type="text" id="reg-username" placeholder="Логин">
     <input type="password" id="reg-password" placeholder="Пароль">
     <input type="text" id="reg-alliance" placeholder="Имя альянса">
-    <div style="display:flex; gap:10px; margin-top:10px;">
+    <div class="btn-row">
       <button onclick="register()">Зарегистрироваться</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
   </div>
 </div>
 
-<!-- === Главный экран (полный функционал — восстановлен) === -->
+<!-- === Главный экран === -->
 <div class="screen" id="main-screen">
   <div class="navbar">
     <div id="navbar-username">👤 Пользователь</div>
@@ -207,8 +64,7 @@ th { background: rgba(255,255,255,0.05); }
   </div>
 
   <div class="emoji-circle">
-    <!-- дворец (raw URL) -->
-    <img src="https://raw.githubusercontent.com/vanisan111/app/app/castle.png" alt="Дворец">
+    <img src="img/castle.png" alt="Дворец">
   </div>
 
   <div class="level-container">
@@ -230,208 +86,7 @@ th { background: rgba(255,255,255,0.05); }
   </div>
 </div>
 
-<script>
-/* === Логика (восстановлена и дополнена) === */
-let balance = 10;                     // стартовый тестовый баланс
-let BR = 100;                         // боевой рейтинг
-let level = 0;                        // уровень (сколько человечков активны)
-let playerID = Math.floor(Math.random()*90000 + 10000); // псевдо-ID игрока
-let referrals = {};                   // {refId: name}
-let lands = [true,false,false,false,false,false,false,false,false]; // 3x3 — первая земля куплена
-// next land cost formula: 5 * ownedCount (ownedCount starts = 1 so first buy = 5 TON)
-
-function showForm(type){
-  // скрыть стартовый, показать логин/рег
-  document.getElementById('auth-choice-screen').style.display='none';
-  if(type === 'login') document.getElementById('login-screen').style.display='flex';
-  else document.getElementById('register-screen').style.display='flex';
-}
-
-function backToChoice(){
-  // скрыть формы и показать старт
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('register-screen').style.display='none';
-  document.getElementById('auth-choice-screen').style.display='flex';
-}
-
-function renderLevel(current, max=10){
-  level = current;
-  const bar = document.getElementById('level-bar');
-  const progress = document.getElementById('level-progress');
-  bar.innerHTML = '';
-  for(let i=1;i<=max;i++){
-    const s = document.createElement('span');
-    s.innerText = '👤';
-    if(i <= current) s.classList.add('active');
-    bar.appendChild(s);
-  }
-  progress.innerText = current + ' / ' + max;
-}
-
-function updateBR(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + BR.toFixed(1);
-}
-
-function login(){
-  const username = document.getElementById('login-username').value || 'Игрок';
-  document.getElementById('navbar-username').innerText = '👤 ' + username;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
-}
-
-function register(){
-  const username = document.getElementById('reg-username').value || 'Игрок';
-  const alliance = document.getElementById('reg-alliance').value || '-';
-  // если в URL был ref, то записываем реферала
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){
-    // сохраняем имя реферала под этим refID (демо-логика — клиентская)
-    referrals[refID] = username;
-  }
-  document.getElementById('navbar-username').innerText = '👤 ' + username + ' [' + alliance + ']';
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
-}
-
-/* Отображение содержимого вкладок */
-function showContent(type){
-  const contentBox = document.getElementById('content-box');
-  contentBox.innerHTML = '<div id="main-text"></div>';
-  const mainText = document.getElementById('main-text');
-
-  if(type === 'palace'){
-    mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
-      👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
-      🤝 Рефер мастер: - <br>
-      💰 Баланс (TON): ${balance}<br>
-      📅 Дата регистрации: ${new Date().toLocaleDateString()}<br>
-      🆔 Telegram ID: #${playerID}<br>
-      ⚔️ BR: ${BR.toFixed(1)}`;
-  }
-  else if(type === 'referrals'){
-    mainText.innerHTML = `👥 <b>Рефералы</b><br><br>
-      Ваш ID: <input type="text" id="player-id" value="${playerID}" readonly style="width:120px;">
-      <button onclick="copyReferral()">Копировать ссылку</button>
-      <div id="ref-list" style="margin-top:10px;"></div>`;
-    updateReferralList();
-  }
-  else if(type === 'balance'){
-    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${balance} TON.`;
-    const sub = document.createElement('div');
-    sub.className = 'sub-buttons';
-    sub.innerHTML = `<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
-    contentBox.appendChild(sub);
-  }
-  else if(type === 'rating'){
-    mainText.innerHTML = `🏆 <b>Рейтинг</b><br><br>`;
-    const table = document.createElement('table');
-    table.innerHTML = `<thead><tr><th>№</th><th>Имя</th><th>Боевая сила</th><th>Участники</th></tr></thead>
-      <tbody>
-      ${Array.from({length:10},(_,i)=>`<tr><td>${i+1}</td><td>Игрок${i+1}</td><td>${Math.floor(Math.random()*1000)+100}</td><td>${Math.floor(Math.random()*50)+1}</td></tr>`).join('')}
-      </tbody>`;
-    contentBox.appendChild(table);
-  }
-  else if(type === 'shop'){
-    mainText.innerHTML = `🛒 <b>Магазин</b><br><br>`;
-    const shopDiv = document.createElement('div');
-    shopDiv.className = 'sub-buttons';
-    shopDiv.innerHTML = `
-      <button onclick="buyItem(1,0.5,'Укрепление дворца')">🏰 Укрепление дворца (1 TON → +0.5% BR)</button>
-      <button onclick="buyItem(2,1.5,'Тренировка армии')">⚔️ Тренировка армии (2 TON → +1.5% BR)</button>
-      <button onclick="buyItem(3,5,'Магическая защита')">🔮 Магическая защита (3 TON → +5% BR)</button>
-    `;
-    contentBox.appendChild(shopDiv);
-
-    // сетка земель 3x3
-    const grid = document.createElement('div');
-    grid.className = 'shop-grid';
-    for(let i=0;i<9;i++){
-      const cell = document.createElement('div');
-      cell.innerText = '🏡';
-      if(lands[i]) cell.classList.add('owned');
-      // подпись цены при наведении для незанятых
-      const ownedCount = lands.filter(x=>x).length;
-      const nextCost = 5 * ownedCount; // если ownedCount=1 => cost 5
-      if(!lands[i]) cell.title = `Купить за ${nextCost} TON`;
-      cell.onclick = ()=> {
-        buyLand(i);
-      };
-      grid.appendChild(cell);
-    }
-    contentBox.appendChild(grid);
-  }
-  else if(type === 'rules'){
-    mainText.innerHTML = `<b>Правила</b><br><br>
-      Каждый игрок может войти в игру бесплатно.<br>
-      При игре он получает феод в распоряжение.<br>
-      Максимум 10 рефералов без возможности вывода средств TON.<br>
-      Для вывода нужно стать бароном - донат 7 TON.<br>
-      Так же есть внутриигровые покупки и NFT торговля.`;
-  }
-}
-
-/* Магазин — покупки */
-function buyItem(cost, percent, name){
-  if(balance < cost){ alert('Недостаточно TON'); return; }
-  balance -= cost;
-  BR += BR * (percent/100);
-  updateBR();
-  alert('Куплено: ' + name);
-  showContent('shop');
-}
-
-/* Рефералы */
-function copyReferral(){
-  const link = `${window.location.origin}${window.location.pathname}?ref=${playerID}`;
-  navigator.clipboard.writeText(link).then(()=>alert('Ссылка скопирована в буфер'));
-}
-function updateReferralList(){
-  const div = document.getElementById('ref-list');
-  if(!div) return;
-  const keys = Object.keys(referrals);
-  if(keys.length===0) div.innerText = 'Пока нет рефералов';
-  else {
-    div.innerHTML = '<ul>' + keys.map(k=>`<li>${k} → ${referrals[k]}</li>`).join('') + '</ul>';
-  }
-}
-
-/* Баланс (демо) */
-function withdraw(){ alert('Вывод средств (демо)'); }
-function deposit(){ balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
-
-/* Земли */
-function buyLand(index){
-  if(lands[index]) return;
-  const ownedCount = lands.filter(x=>x).length; // starts 1
-  const cost = 5 * ownedCount; // first buy = 5 TON
-  if(balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
-  balance -= cost;
-  lands[index] = true;
-  alert(`Куплено поле #${index+1} за ${cost} TON`);
-  showContent('shop');
-}
-
-/* Инициализация: показываем стартовый экран по-умолчанию (auth-choice-screen уже видим) */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // если стартовая страница открыта — уже видна
-  // но также проверим referral param и если он есть, покажем на стартовом экране info (необязательно)
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){
-    // если пригласитель известен (в referrals) — можно показать, иначе просто пометка
-    if(referrals[refID]){
-      // можно добавить визуальную подсказку, но не меняем дизайн
-      console.log('Ref param', refID, 'is known:', referrals[refID]);
-    } else {
-      console.log('Ref param present but unknown:', refID);
-    }
-  }
-});
-</script>
+<!-- Подключение JS -->
+<script src="script.js"></script>
 </body>
 </html>
