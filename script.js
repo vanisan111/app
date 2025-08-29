@@ -5,6 +5,30 @@ let playerID = Math.floor(Math.random()*90000 + 10000);
 let referrals = {};
 let lands = [true,false,false,false,false,false,false,false,false];
 
+// ===== Энергия =====
+let energy = 100;
+const maxEnergy = 100;
+const palaceClickCost = 2;
+const palaceClickBR = 0.01;
+
+// Показываем энергию в navbar
+function updateEnergyDisplay() {
+  let el = document.getElementById('navbar-energy');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'navbar-energy';
+    document.querySelector('.user-info').appendChild(el);
+  }
+  el.innerText = `⚡ ${energy}/${maxEnergy}`;
+}
+
+// Регена энергии каждую 5 секунд
+setInterval(()=>{
+  if(energy < maxEnergy) energy++;
+  updateEnergyDisplay();
+},5000);
+
+// ===== Функции UI =====
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
   if(type==='login') document.getElementById('login-screen').style.display='flex';
@@ -28,7 +52,7 @@ function renderLevel(current,max=10){
   }
   progress.innerText=current+' / '+max;
 }
-function updateBR(){ document.getElementById('navbar-br').innerText='⚔️ BR: '+BR.toFixed(1); }
+function updateBR(){ document.getElementById('navbar-br').innerText='⚔️ BR: '+BR.toFixed(2); }
 function login(){
   const username=document.getElementById('login-username').value || 'Игрок';
   document.getElementById('navbar-username').innerText='👤 '+username;
@@ -36,6 +60,7 @@ function login(){
   document.getElementById('main-screen').style.display='flex';
   renderLevel(0,10);
   updateBR();
+  updateEnergyDisplay();
 }
 function register(){
   const username=document.getElementById('reg-username').value || 'Игрок';
@@ -48,8 +73,22 @@ function register(){
   document.getElementById('main-screen').style.display='flex';
   renderLevel(0,10);
   updateBR();
+  updateEnergyDisplay();
 }
 
+// ===== Клик по дворцу =====
+function palaceClick(){
+  if(energy < palaceClickCost){
+    alert('Недостаточно энергии!');
+    return;
+  }
+  energy -= palaceClickCost;
+  BR += palaceClickBR;
+  updateBR();
+  updateEnergyDisplay();
+}
+
+// ===== Контент вкладок =====
 function showContent(type){
   const contentBox=document.getElementById('content-box');
   contentBox.innerHTML='<div id="main-text"></div>';
@@ -59,7 +98,9 @@ function showContent(type){
     mainText.innerHTML=`ℹ️ <b>Дворец</b><br><br>
       👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
       💰 Баланс (TON): ${balance}<br>
-      ⚔️ BR: ${BR.toFixed(1)}`;
+      ⚔️ BR: ${BR.toFixed(2)}<br>
+      ⚡ Энергия: ${energy}/${maxEnergy}<br>
+      <button onclick="palaceClick()">Клик по дворцу</button>`;
   }
   else if(type==='referrals'){ mainText.innerHTML='Рефералы'; }
   else if(type==='balance'){ mainText.innerHTML='Баланс'; }
