@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RefAliance — полный</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RefAliance — полный</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-
-  <!-- Подключение CSS -->
-  <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<!-- === Стартовый экран === -->
+<!-- === стартовый экран === -->
 <div class="screen" id="auth-choice-screen">
-  <div class="auth-box">
-    <img src="king.png" alt="King" class="logo-img">
-    <h2 class="title">RefAliance</h2>
-    <div class="toggle-buttons">
+  <div class="start-box">
+    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" class="start-img">
+    <h2 class="start-title">RefAliance</h2>
+    <div class="toggle-buttons start-buttons">
       <button onclick="showForm('login')">Авторизация</button>
       <button onclick="showForm('register')">Регистрация</button>
     </div>
@@ -31,7 +28,7 @@
     <h2>Авторизация</h2>
     <input type="text" id="login-username" placeholder="Логин">
     <input type="password" id="login-password" placeholder="Пароль">
-    <div class="btn-row">
+    <div class="login-buttons">
       <button onclick="login()">Войти</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
@@ -45,7 +42,7 @@
     <input type="text" id="reg-username" placeholder="Логин">
     <input type="password" id="reg-password" placeholder="Пароль">
     <input type="text" id="reg-alliance" placeholder="Имя альянса">
-    <div class="btn-row">
+    <div class="login-buttons">
       <button onclick="register()">Зарегистрироваться</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
@@ -64,7 +61,7 @@
   </div>
 
   <div class="emoji-circle">
-    <img src="castle.png" alt="Дворец">
+    <img src="https://raw.githubusercontent.com/vanisan111/app/app/castle.png" alt="Дворец">
   </div>
 
   <div class="level-container">
@@ -86,7 +83,6 @@
   </div>
 </div>
 
-<!-- Подключение JS -->
 <script src="script.js"></script>
 </body>
 </html>
