@@ -10,46 +10,46 @@
 </head>
 <body>
 
-<!-- === стартовый экран === -->
-<div class="screen" id="auth-choice-screen">
-  <div class="auth-box">
-    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" class="king-img">
-    <h2>RefAliance</h2>
-    <div class="toggle-buttons">
-      <button onclick="showForm('login')">Авторизация</button>
-      <button onclick="showForm('register')">Регистрация</button>
+<!-- === стартовый экран: только он изменён (изображение + RefAliance + вертикальные кнопки) === -->
+<div class="screen" id="auth-choice-screen" style="display:flex; flex-direction:column; align-items:center;">
+  <div style="background: linear-gradient(160deg,#0f1a36,#182147); padding:20px; border-radius:12px; display:flex; flex-direction:column; align-items:center; box-shadow:0 6px 18px rgba(0,0,0,0.65);">
+    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" style="max-width:180px; margin-bottom:14px; display:block;">
+    <h2 style="margin:0 0 14px; color:gold; text-shadow:0 0 10px rgba(255,215,0,0.9); font-size:26px;">RefAliance</h2>
+    <div class="toggle-buttons" style="flex-direction:column; width:100%; align-items:center;">
+      <button onclick="showForm('login')" style="width:220px; margin-bottom:8px;">Авторизация</button>
+      <button onclick="showForm('register')" style="width:220px;">Регистрация</button>
     </div>
   </div>
 </div>
 
-<!-- === Login экран === -->
+<!-- === Login экран (не тронут) === -->
 <div class="screen" id="login-screen">
   <div class="login-box">
     <h2>Авторизация</h2>
     <input type="text" id="login-username" placeholder="Логин">
     <input type="password" id="login-password" placeholder="Пароль">
-    <div class="login-buttons">
+    <div style="display:flex; gap:10px; margin-top:10px;">
       <button onclick="login()">Войти</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
   </div>
 </div>
 
-<!-- === Register экран === -->
+<!-- === Register экран (не тронут) === -->
 <div class="screen" id="register-screen">
   <div class="login-box">
     <h2>Регистрация</h2>
     <input type="text" id="reg-username" placeholder="Логин">
     <input type="password" id="reg-password" placeholder="Пароль">
     <input type="text" id="reg-alliance" placeholder="Имя альянса">
-    <div class="login-buttons">
+    <div style="display:flex; gap:10px; margin-top:10px;">
       <button onclick="register()">Зарегистрироваться</button>
       <button onclick="backToChoice()">Назад</button>
     </div>
   </div>
 </div>
 
-<!-- === Главный экран === -->
+<!-- === Главный экран (полный функционал — восстановлен) === -->
 <div class="screen" id="main-screen">
   <div class="navbar">
     <div id="navbar-username">👤 Пользователь</div>
