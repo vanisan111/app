@@ -4,25 +4,24 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RefAliance — полный</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- === стартовый экран === -->
+<!-- Стартовый экран -->
 <div class="screen" id="auth-choice-screen">
-  <div class="start-box">
-    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" class="start-img">
-    <h2 class="start-title">RefAliance</h2>
-    <div class="toggle-buttons start-buttons">
+  <div class="auth-box">
+    <img src="https://raw.githubusercontent.com/vanisan111/app/app/king.png" alt="King" class="auth-img">
+    <h2 class="auth-title">RefAliance</h2>
+    <div class="toggle-buttons">
       <button onclick="showForm('login')">Авторизация</button>
       <button onclick="showForm('register')">Регистрация</button>
     </div>
   </div>
 </div>
 
-<!-- === Login экран === -->
+<!-- Login экран -->
 <div class="screen" id="login-screen">
   <div class="login-box">
     <h2>Авторизация</h2>
@@ -35,7 +34,7 @@
   </div>
 </div>
 
-<!-- === Register экран === -->
+<!-- Register экран -->
 <div class="screen" id="register-screen">
   <div class="login-box">
     <h2>Регистрация</h2>
@@ -49,7 +48,7 @@
   </div>
 </div>
 
-<!-- === Главный экран === -->
+<!-- Главный экран -->
 <div class="screen" id="main-screen">
   <div class="navbar">
     <div id="navbar-username">👤 Пользователь</div>
@@ -83,6 +82,6 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
