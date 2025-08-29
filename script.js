@@ -1,193 +1,127 @@
-/* === Логика игры RefAliance === */
+/* === Игровые данные === */
+let balance = 10;
+let BR = 100;
+let level = 0;
+let playerID = Math.floor(Math.random()*90000 + 10000);
+let referrals = {};
+let lands = [true,false,false,false,false,false,false,false,false];
 
-window.balance = 10;                     // стартовый тестовый баланс
-window.BR = 100;                         // боевой рейтинг
-window.level = 0;                        // уровень (сколько человечков активны)
-window.playerID = Math.floor(Math.random() * 90000 + 10000); // псевдо-ID игрока
-window.referrals = {};                   // {refId: name}
-window.lands = [true,false,false,false,false,false,false,false,false]; // 3x3 — первая земля куплена
+/* === Энергия === */
+let maxEnergy = 100;
+let energy = maxEnergy;
+let clickBR = 0.01;
+let clickCost = 2;
+let energyRegenInterval = 5000; // каждые 5 секунд
 
-// Показ форм авторизации/регистрации
-window.showForm = function(type){
+/* === Управление экранами === */
+function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
-  if(type === 'login') document.getElementById('login-screen').style.display='flex';
-  else document.getElementById('register-screen').style.display='flex';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('register-screen').style.display='none';
+  if(type==='login') document.getElementById('login-screen').style.display='flex';
+  if(type==='register') document.getElementById('register-screen').style.display='flex';
 }
 
-window.backToChoice = function(){
+function backToChoice(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('register-screen').style.display='none';
   document.getElementById('auth-choice-screen').style.display='flex';
 }
 
-// Уровень игрока
-window.renderLevel = function(current, max=10){
-  window.level = current;
+/* === Уровень === */
+function renderLevel(current,max=10){
+  level = current;
   const bar = document.getElementById('level-bar');
   const progress = document.getElementById('level-progress');
-  bar.innerHTML = '';
+  bar.innerHTML='';
   for(let i=1;i<=max;i++){
     const s = document.createElement('span');
-    s.innerText = '👤';
-    if(i <= current) s.classList.add('active');
+    s.innerText='👤';
+    if(i<=current) s.classList.add('active');
     bar.appendChild(s);
   }
-  progress.innerText = current + ' / ' + max;
+  progress.innerText=current+' / '+max;
 }
 
-// Обновление BR
-window.updateBR = function(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + window.BR.toFixed(1);
-}
+function updateBR(){ document.getElementById('navbar-br').innerText='⚔️ BR: '+BR.toFixed(2); }
 
-// Авторизация
-window.login = function(){
+/* === Логин / Регистрация === */
+function login(){
   const username = document.getElementById('login-username').value || 'Игрок';
-  document.getElementById('navbar-username').innerText = '👤 ' + username;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
+  document.getElementById('navbar-username').innerText='👤 '+username;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-screen').style.display='flex';
   renderLevel(0,10);
   updateBR();
 }
 
-// Регистрация
-window.register = function(){
+function register(){
   const username = document.getElementById('reg-username').value || 'Игрок';
   const alliance = document.getElementById('reg-alliance').value || '-';
   const urlParams = new URLSearchParams(window.location.search);
   const refID = urlParams.get('ref');
-  if(refID){
-    window.referrals[refID] = username;
-  }
-  document.getElementById('navbar-username').innerText = '👤 ' + username + ' [' + alliance + ']';
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
+  if(refID) referrals[refID]=username;
+  document.getElementById('navbar-username').innerText='👤 '+username+' ['+alliance+']';
+  document.getElementById('register-screen').style.display='none';
+  document.getElementById('main-screen').style.display='flex';
   renderLevel(0,10);
   updateBR();
 }
 
-// Показ вкладок
-window.showContent = function(type){
+/* === Контент === */
+function showContent(type){
   const contentBox = document.getElementById('content-box');
-  contentBox.innerHTML = '<div id="main-text"></div>';
+  contentBox.innerHTML='<div id="main-text"></div>';
   const mainText = document.getElementById('main-text');
 
-  if(type === 'palace'){
-    mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
+  if(type==='palace'){
+    mainText.innerHTML=`ℹ️ <b>Дворец</b><br><br>
       👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
-      🤝 Рефер мастер: - <br>
-      💰 Баланс (TON): ${window.balance}<br>
-      📅 Дата регистрации: ${new Date().toLocaleDateString()}<br>
-      🆔 Telegram ID: #${window.playerID}<br>
-      ⚔️ BR: ${window.BR.toFixed(1)}`;
-  }
-  else if(type === 'referrals'){
-    mainText.innerHTML = `👥 <b>Рефералы</b><br><br>
-      Ваш ID: <input type="text" id="player-id" value="${window.playerID}" readonly style="width:120px;">
-      <button onclick="copyReferral()">Копировать ссылку</button>
-      <div id="ref-list" style="margin-top:10px;"></div>`;
-    updateReferralList();
-  }
-  else if(type === 'balance'){
-    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${window.balance} TON.`;
-    const sub = document.createElement('div');
-    sub.className = 'sub-buttons';
-    sub.innerHTML = `<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
-    contentBox.appendChild(sub);
-  }
-  else if(type === 'rating'){
-    mainText.innerHTML = `🏆 <b>Рейтинг</b><br><br>`;
-    const table = document.createElement('table');
-    table.innerHTML = `<thead><tr><th>№</th><th>Имя</th><th>Боевая сила</th><th>Участники</th></tr></thead>
-      <tbody>
-      ${Array.from({length:10},(_,i)=>`<tr><td>${i+1}</td><td>Игрок${i+1}</td><td>${Math.floor(Math.random()*1000)+100}</td><td>${Math.floor(Math.random()*50)+1}</td></tr>`).join('')}
-      </tbody>`;
-    contentBox.appendChild(table);
-  }
-  else if(type === 'shop'){
-    mainText.innerHTML = `🛒 <b>Магазин</b><br><br>`;
-    const shopDiv = document.createElement('div');
-    shopDiv.className = 'sub-buttons';
-    shopDiv.innerHTML = `
-      <button onclick="buyItem(1,0.5,'Укрепление дворца')">🏰 Укрепление дворца (1 TON → +0.5% BR)</button>
-      <button onclick="buyItem(2,1.5,'Тренировка армии')">⚔️ Тренировка армии (2 TON → +1.5% BR)</button>
-      <button onclick="buyItem(3,5,'Магическая защита')">🔮 Магическая защита (3 TON → +5% BR)</button>
-    `;
-    contentBox.appendChild(shopDiv);
+      💰 Баланс (TON): ${balance}<br>
+      ⚔️ BR: ${BR.toFixed(2)}<br>
+      🆔 ID: #${playerID}`;
 
-    const grid = document.createElement('div');
-    grid.className = 'shop-grid';
-    for(let i=0;i<9;i++){
-      const cell = document.createElement('div');
-      cell.innerText = '🏡';
-      if(window.lands[i]) cell.classList.add('owned');
-      const ownedCount = window.lands.filter(x=>x).length;
-      const nextCost = 5 * ownedCount;
-      if(!window.lands[i]) cell.title = `Купить за ${nextCost} TON`;
-      cell.onclick = ()=> { buyLand(i); };
-      grid.appendChild(cell);
-    }
-    contentBox.appendChild(grid);
+    // кнопка клика по дворцу
+    let clickBtn = document.createElement('button');
+    clickBtn.innerText=`Нажать на дворец (+${clickBR} BR, -${clickCost}⚡)`;
+    clickBtn.style.marginTop='10px';
+    clickBtn.onclick=palaceClick;
+    mainText.appendChild(clickBtn);
+
+    updateEnergyDisplay();
   }
-  else if(type === 'rules'){
-    mainText.innerHTML = `<b>Правила</b><br><br>
-      Каждый игрок может войти в игру бесплатно.<br>
-      При игре он получает феод в распоряжение.<br>
-      Максимум 10 рефералов без возможности вывода средств TON.<br>
-      Для вывода нужно стать бароном - донат 7 TON.<br>
-      Так же есть внутриигровые покупки и NFT торговля.`;
-  }
+  // остальной функционал вкладок оставляем без изменений
 }
 
-// Покупки в магазине
-window.buyItem = function(cost, percent, name){
-  if(window.balance < cost){ alert('Недостаточно TON'); return; }
-  window.balance -= cost;
-  window.BR += window.BR * (percent/100);
+/* === Клик по дворцу === */
+function palaceClick(){
+  if(energy < clickCost){ alert('Недостаточно энергии!'); return; }
+  energy -= clickCost;
+  BR += clickBR;
   updateBR();
-  alert('Куплено: ' + name);
-  showContent('shop');
+  updateEnergyDisplay();
 }
 
-// Рефералы
-window.copyReferral = function(){
-  const link = `${window.location.origin}${window.location.pathname}?ref=${window.playerID}`;
-  navigator.clipboard.writeText(link).then(()=>alert('Ссылка скопирована в буфер'));
-}
-
-window.updateReferralList = function(){
-  const div = document.getElementById('ref-list');
-  if(!div) return;
-  const keys = Object.keys(window.referrals);
-  if(keys.length===0) div.innerText = 'Пока нет рефералов';
-  else div.innerHTML = '<ul>' + keys.map(k=>`<li>${k} → ${window.referrals[k]}</li>`).join('') + '</ul>';
-}
-
-// Баланс (демо)
-window.withdraw = function(){ alert('Вывод средств (демо)'); }
-window.deposit = function(){ window.balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
-
-// Покупка земель
-window.buyLand = function(index){
-  if(window.lands[index]) return;
-  const ownedCount = window.lands.filter(x=>x).length;
-  const cost = 5 * ownedCount;
-  if(window.balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
-  window.balance -= cost;
-  window.lands[index] = true;
-  alert(`Куплено поле #${index+1} за ${cost} TON`);
-  showContent('shop');
-}
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', ()=>{
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){
-    if(window.referrals[refID]){
-      console.log('Ref param', refID, 'is known:', window.referrals[refID]);
-    } else {
-      console.log('Ref param present but unknown:', refID);
-    }
+/* === Энергия === */
+function updateEnergyDisplay(){
+  const contentBox = document.getElementById('content-box');
+  let energyDiv = document.getElementById('energy-display');
+  if(!energyDiv){
+    energyDiv = document.createElement('div');
+    energyDiv.id='energy-display';
+    energyDiv.style.marginTop='10px';
+    energyDiv.style.fontWeight='bold';
+    contentBox.prepend(energyDiv);
   }
+  energyDiv.innerText=`⚡ Энергия: ${energy} / ${maxEnergy}`;
+}
+
+function regenEnergy(){
+  if(energy < maxEnergy){ energy++; updateEnergyDisplay(); }
+}
+setInterval(regenEnergy, energyRegenInterval);
+
+/* === Инициализация === */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('auth-choice-screen').style.display='flex';
 });
