@@ -1,28 +1,28 @@
 /* === Логика игры RefAliance === */
 
-let balance = 10;                     // стартовый тестовый баланс
-let BR = 100;                         // боевой рейтинг
-let level = 0;                        // уровень (сколько человечков активны)
-let playerID = Math.floor(Math.random()*90000 + 10000); // псевдо-ID игрока
-let referrals = {};                   // {refId: name}
-let lands = [true,false,false,false,false,false,false,false,false]; // 3x3 — первая земля куплена
+window.balance = 10;                     // стартовый тестовый баланс
+window.BR = 100;                         // боевой рейтинг
+window.level = 0;                        // уровень (сколько человечков активны)
+window.playerID = Math.floor(Math.random() * 90000 + 10000); // псевдо-ID игрока
+window.referrals = {};                   // {refId: name}
+window.lands = [true,false,false,false,false,false,false,false,false]; // 3x3 — первая земля куплена
 
-/* === Показываем формы логина/регистрации === */
-function showForm(type){
+// Показ форм авторизации/регистрации
+window.showForm = function(type){
   document.getElementById('auth-choice-screen').style.display='none';
   if(type === 'login') document.getElementById('login-screen').style.display='flex';
   else document.getElementById('register-screen').style.display='flex';
 }
 
-function backToChoice(){
+window.backToChoice = function(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('register-screen').style.display='none';
   document.getElementById('auth-choice-screen').style.display='flex';
 }
 
-/* === Отображение уровня игрока === */
-function renderLevel(current, max=10){
-  level = current;
+// Уровень игрока
+window.renderLevel = function(current, max=10){
+  window.level = current;
   const bar = document.getElementById('level-bar');
   const progress = document.getElementById('level-progress');
   bar.innerHTML = '';
@@ -35,13 +35,13 @@ function renderLevel(current, max=10){
   progress.innerText = current + ' / ' + max;
 }
 
-/* === Обновление BR === */
-function updateBR(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + BR.toFixed(1);
+// Обновление BR
+window.updateBR = function(){
+  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + window.BR.toFixed(1);
 }
 
-/* === Авторизация и регистрация === */
-function login(){
+// Авторизация
+window.login = function(){
   const username = document.getElementById('login-username').value || 'Игрок';
   document.getElementById('navbar-username').innerText = '👤 ' + username;
   document.getElementById('login-screen').style.display = 'none';
@@ -50,13 +50,14 @@ function login(){
   updateBR();
 }
 
-function register(){
+// Регистрация
+window.register = function(){
   const username = document.getElementById('reg-username').value || 'Игрок';
   const alliance = document.getElementById('reg-alliance').value || '-';
   const urlParams = new URLSearchParams(window.location.search);
   const refID = urlParams.get('ref');
   if(refID){
-    referrals[refID] = username;
+    window.referrals[refID] = username;
   }
   document.getElementById('navbar-username').innerText = '👤 ' + username + ' [' + alliance + ']';
   document.getElementById('register-screen').style.display = 'none';
@@ -65,8 +66,8 @@ function register(){
   updateBR();
 }
 
-/* === Отображение содержимого вкладок === */
-function showContent(type){
+// Показ вкладок
+window.showContent = function(type){
   const contentBox = document.getElementById('content-box');
   contentBox.innerHTML = '<div id="main-text"></div>';
   const mainText = document.getElementById('main-text');
@@ -75,20 +76,20 @@ function showContent(type){
     mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
       👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
       🤝 Рефер мастер: - <br>
-      💰 Баланс (TON): ${balance}<br>
+      💰 Баланс (TON): ${window.balance}<br>
       📅 Дата регистрации: ${new Date().toLocaleDateString()}<br>
-      🆔 Telegram ID: #${playerID}<br>
-      ⚔️ BR: ${BR.toFixed(1)}`;
+      🆔 Telegram ID: #${window.playerID}<br>
+      ⚔️ BR: ${window.BR.toFixed(1)}`;
   }
   else if(type === 'referrals'){
     mainText.innerHTML = `👥 <b>Рефералы</b><br><br>
-      Ваш ID: <input type="text" id="player-id" value="${playerID}" readonly style="width:120px;">
+      Ваш ID: <input type="text" id="player-id" value="${window.playerID}" readonly style="width:120px;">
       <button onclick="copyReferral()">Копировать ссылку</button>
       <div id="ref-list" style="margin-top:10px;"></div>`;
     updateReferralList();
   }
   else if(type === 'balance'){
-    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${balance} TON.`;
+    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${window.balance} TON.`;
     const sub = document.createElement('div');
     sub.className = 'sub-buttons';
     sub.innerHTML = `<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
@@ -119,10 +120,10 @@ function showContent(type){
     for(let i=0;i<9;i++){
       const cell = document.createElement('div');
       cell.innerText = '🏡';
-      if(lands[i]) cell.classList.add('owned');
-      const ownedCount = lands.filter(x=>x).length;
+      if(window.lands[i]) cell.classList.add('owned');
+      const ownedCount = window.lands.filter(x=>x).length;
       const nextCost = 5 * ownedCount;
-      if(!lands[i]) cell.title = `Купить за ${nextCost} TON`;
+      if(!window.lands[i]) cell.title = `Купить за ${nextCost} TON`;
       cell.onclick = ()=> { buyLand(i); };
       grid.appendChild(cell);
     }
@@ -138,55 +139,53 @@ function showContent(type){
   }
 }
 
-/* === Магазин — покупки === */
-function buyItem(cost, percent, name){
-  if(balance < cost){ alert('Недостаточно TON'); return; }
-  balance -= cost;
-  BR += BR * (percent/100);
+// Покупки в магазине
+window.buyItem = function(cost, percent, name){
+  if(window.balance < cost){ alert('Недостаточно TON'); return; }
+  window.balance -= cost;
+  window.BR += window.BR * (percent/100);
   updateBR();
   alert('Куплено: ' + name);
   showContent('shop');
 }
 
-/* === Рефералы === */
-function copyReferral(){
-  const link = `${window.location.origin}${window.location.pathname}?ref=${playerID}`;
+// Рефералы
+window.copyReferral = function(){
+  const link = `${window.location.origin}${window.location.pathname}?ref=${window.playerID}`;
   navigator.clipboard.writeText(link).then(()=>alert('Ссылка скопирована в буфер'));
 }
 
-function updateReferralList(){
+window.updateReferralList = function(){
   const div = document.getElementById('ref-list');
   if(!div) return;
-  const keys = Object.keys(referrals);
+  const keys = Object.keys(window.referrals);
   if(keys.length===0) div.innerText = 'Пока нет рефералов';
-  else {
-    div.innerHTML = '<ul>' + keys.map(k=>`<li>${k} → ${referrals[k]}</li>`).join('') + '</ul>';
-  }
+  else div.innerHTML = '<ul>' + keys.map(k=>`<li>${k} → ${window.referrals[k]}</li>`).join('') + '</ul>';
 }
 
-/* === Баланс (демо) === */
-function withdraw(){ alert('Вывод средств (демо)'); }
-function deposit(){ balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
+// Баланс (демо)
+window.withdraw = function(){ alert('Вывод средств (демо)'); }
+window.deposit = function(){ window.balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
 
-/* === Земли === */
-function buyLand(index){
-  if(lands[index]) return;
-  const ownedCount = lands.filter(x=>x).length;
+// Покупка земель
+window.buyLand = function(index){
+  if(window.lands[index]) return;
+  const ownedCount = window.lands.filter(x=>x).length;
   const cost = 5 * ownedCount;
-  if(balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
-  balance -= cost;
-  lands[index] = true;
+  if(window.balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
+  window.balance -= cost;
+  window.lands[index] = true;
   alert(`Куплено поле #${index+1} за ${cost} TON`);
   showContent('shop');
 }
 
-/* === Инициализация === */
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', ()=>{
   const urlParams = new URLSearchParams(window.location.search);
   const refID = urlParams.get('ref');
   if(refID){
-    if(referrals[refID]){
-      console.log('Ref param', refID, 'is known:', referrals[refID]);
+    if(window.referrals[refID]){
+      console.log('Ref param', refID, 'is known:', window.referrals[refID]);
     } else {
       console.log('Ref param present but unknown:', refID);
     }
