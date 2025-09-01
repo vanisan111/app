@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://e71ac9d04bab.ngrok-free.app'; // твой ngrok публичный URL
+const SERVER = 'https://d72b5594823a.ngrok-free.app'; // твой ngrok публичный URL
 
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
@@ -229,3 +229,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ sword.remove(); },800);
   }
 });
+
