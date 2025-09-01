@@ -37,7 +37,7 @@ function updateBR(){
   document.getElementById('navbar-br').innerText='⚔️ BR: '+br;
 }
 
-// === Логин ===
+// === Login ===
 function login(){
   const username=document.getElementById('login-username').value.trim();
   const password=document.getElementById('login-password').value.trim();
@@ -48,7 +48,10 @@ function login(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({username,password})
   })
-  .then(res=>res.json())
+  .then(async res=>{
+    if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+    return res.json();
+  })
   .then(data=>{
     if(data.error) alert(data.error);
     else{
@@ -62,7 +65,7 @@ function login(){
       updateBR();
     }
   })
-  .catch(err=>alert('Ошибка соединения с сервером'));
+  .catch(err=>alert('Ошибка соединения с сервером: '+err.message));
 }
 
 // === Регистрация ===
@@ -77,7 +80,10 @@ function register(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({username,password,alliance})
   })
-  .then(res=>res.json())
+  .then(async res=>{
+    if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+    return res.json();
+  })
   .then(data=>{
     if(data.error) alert(data.error);
     else{
@@ -85,7 +91,7 @@ function register(){
       backToChoice();
     }
   })
-  .catch(err=>alert('Ошибка соединения с сервером'));
+  .catch(err=>alert('Ошибка соединения с сервером: '+err.message));
 }
 
 // === Сохраняем данные на сервер ===
@@ -102,7 +108,10 @@ function savePlayerData(){
       referrals:playerData.referrals || []
     })
   })
-  .then(res=>res.json())
+  .then(async res=>{
+    if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+    return res.json();
+  })
   .then(data=>{
     if(data.error) console.error('Ошибка сохранения',data.error);
   })
@@ -139,13 +148,18 @@ function showContent(type){
   } else if(type==='rating'){
     mainText.innerHTML=`🏆 Рейтинг<br><br>`;
     fetch(`${SERVER}/api/rating`)
-      .then(res=>res.json())
+      .then(async res=>{
+        if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+        return res.json();
+      })
       .then(users=>{
-        users.sort((a,b)=>b.BR-a.BR); // Сортировка по BR
         const table=document.createElement('table');
         table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
           <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
         contentBox.appendChild(table);
+      })
+      .catch(err=>{
+        mainText.innerHTML=`Ошибка загрузки рейтинга: ${err.message}`;
       });
   } else if(type==='shop'){
     mainText.innerHTML=`🛒 Магазин<br><br>`;
