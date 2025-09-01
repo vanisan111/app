@@ -16,7 +16,7 @@ function backToChoice(){
   document.getElementById('auth-choice-screen').style.display='flex';
 }
 
-// === Отрисовка уровня ===
+// === Уровень ===
 function renderLevel(current, max=10){
   const bar = document.getElementById('level-bar');
   const progress = document.getElementById('level-progress');
@@ -33,13 +33,15 @@ function renderLevel(current, max=10){
 // === BR ===
 function updateBR(){
   if(!playerData) return;
-  document.getElementById('navbar-br').innerText='⚔️ BR: '+(playerData.BR||100).toFixed(1);
+  const br = typeof playerData.BR === 'number' ? playerData.BR.toFixed(1) : 100;
+  document.getElementById('navbar-br').innerText='⚔️ BR: '+br;
 }
 
 // === Логин ===
 function login(){
-  const username=document.getElementById('login-username').value;
-  const password=document.getElementById('login-password').value;
+  const username=document.getElementById('login-username').value.trim();
+  const password=document.getElementById('login-password').value.trim();
+  if(!username || !password){ alert('Заполните все поля'); return; }
 
   fetch(`${SERVER}/api/login`,{
     method:'POST',
@@ -56,7 +58,7 @@ function login(){
       document.getElementById('navbar-username').innerText='👤 '+playerData.username+' ['+(playerData.alliance||'-')+']';
       document.getElementById('login-screen').style.display='none';
       document.getElementById('main-screen').style.display='flex';
-      renderLevel(playerData.level);
+      renderLevel(playerData.level||1);
       updateBR();
     }
   })
@@ -65,9 +67,10 @@ function login(){
 
 // === Регистрация ===
 function register(){
-  const username=document.getElementById('reg-username').value;
-  const password=document.getElementById('reg-password').value;
-  const alliance=document.getElementById('reg-alliance').value;
+  const username=document.getElementById('reg-username').value.trim();
+  const password=document.getElementById('reg-password').value.trim();
+  const alliance=document.getElementById('reg-alliance').value.trim();
+  if(!username || !password){ alert('Заполните все поля'); return; }
 
   fetch(`${SERVER}/api/register`,{
     method:'POST',
@@ -89,7 +92,7 @@ function register(){
 function buyItem(cost, percent, name){
   if(playerData.balance<cost){ alert('Недостаточно TON'); return; }
   playerData.balance-=cost;
-  playerData.BR+=playerData.BR*(percent/100);
+  playerData.BR+=(playerData.BR || 100)*(percent/100);
   updateBR();
   savePlayerData();
   alert('Куплено: '+name);
@@ -115,11 +118,11 @@ function savePlayerData(){
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      BR:Number(playerData.BR),
-      balance:Number(playerData.balance),
-      level:Number(playerData.level),
+      BR:Number(playerData.BR || 100),
+      balance:Number(playerData.balance || 0),
+      level:Number(playerData.level || 1),
       lands,
-      referrals:playerData.referrals
+      referrals:playerData.referrals || []
     })
   })
   .then(res=>res.json())
@@ -140,10 +143,10 @@ function showContent(type){
     mainText.innerHTML=`ℹ️ Дворец<br><br>
       👤 Имя: ${playerData.username}<br>
       🤝 Рефер мастер: -<br>
-      💰 Баланс: ${playerData.balance}<br>
-      📅 Дата регистрации: ${new Date(playerData.created_at).toLocaleDateString()}<br>
+      💰 Баланс: ${playerData.balance || 0}<br>
+      📅 Дата регистрации: ${playerData.created_at ? new Date(playerData.created_at).toLocaleDateString() : '-'}<br>
       🆔 ID: #${playerData.id}<br>
-      ⚔️ BR: ${playerData.BR.toFixed(1)}`;
+      ⚔️ BR: ${(playerData.BR||100).toFixed(1)}`;
   } else if(type==='referrals'){
     mainText.innerHTML=`👥 Рефералы<br><br>
       Ваш ID: <input type="text" value="${playerData.id}" readonly style="width:120px;">
@@ -151,7 +154,7 @@ function showContent(type){
       <div id="ref-list" style="margin-top:10px;"></div>`;
     updateReferralList();
   } else if(type==='balance'){
-    mainText.innerHTML=`💰 Баланс<br><br>Ваш баланс: ${playerData.balance} TON.`;
+    mainText.innerHTML=`💰 Баланс<br><br>Ваш баланс: ${playerData.balance || 0} TON.`;
     const sub = document.createElement('div');
     sub.className='sub-buttons';
     sub.innerHTML=`<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
@@ -163,7 +166,7 @@ function showContent(type){
       .then(users=>{
         const table=document.createElement('table');
         table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
-          <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${u.BR.toFixed(1)}</td><td>${u.balance}</td></tr>`).join('')}</tbody>`;
+          <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
         contentBox.appendChild(table);
       });
   } else if(type==='shop'){
@@ -213,7 +216,7 @@ function updateReferralList(){
 
 // === Пополнение/вывод ===
 function withdraw(){ alert('Вывод (демо)'); }
-function deposit(){ playerData.balance+=5; alert('Пополнение +5 TON'); showContent('balance'); }
+function deposit(){ playerData.balance=(playerData.balance||0)+5; alert('Пополнение +5 TON'); showContent('balance'); }
 
 // === Энергия и клики по дворцу ===
 document.addEventListener('DOMContentLoaded',()=>{
@@ -232,7 +235,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   palace.addEventListener('click',()=>{
     if(energy<2){ alert('Недостаточно энергии!'); return; }
     energy-=2;
-    playerData.BR+=0.05;
+    playerData.BR=(playerData.BR||100)+0.05;
     updateEnergyDisplay();
     updateBR();
     showSwordAnimation();
