@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'http://37.53.92.226:3000'; // твой внешний IP
+const SERVER = 'http://37.53.92.226:3000'; // твой внешний IP с портом
 
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
@@ -30,7 +30,7 @@ function renderLevel(current, max=10){
 }
 
 function updateBR(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + playerData.BR.toFixed(1);
+  if(playerData) document.getElementById('navbar-br').innerText = '⚔️ BR: ' + playerData.BR.toFixed(1);
 }
 
 function login(){
@@ -47,14 +47,16 @@ function login(){
     if(data.error) alert(data.error);
     else {
       playerData = data;
-      lands = playerData.lands ? JSON.parse(playerData.lands) : lands;
+      lands = Array.isArray(playerData.lands) ? playerData.lands : JSON.parse(playerData.lands||'[]');
+      playerData.referrals = Array.isArray(playerData.referrals) ? playerData.referrals : JSON.parse(playerData.referrals||'[]');
       document.getElementById('navbar-username').innerText = '👤 ' + playerData.username + ' [' + (playerData.alliance||'-') + ']';
       document.getElementById('login-screen').style.display='none';
       document.getElementById('main-screen').style.display='flex';
       renderLevel(playerData.level);
       updateBR();
     }
-  });
+  })
+  .catch(err=>alert('Ошибка сервера: '+err));
 }
 
 function register(){
@@ -74,7 +76,8 @@ function register(){
       alert('Регистрация успешна! Теперь войдите.');
       backToChoice();
     }
-  });
+  })
+  .catch(err=>alert('Ошибка сервера: '+err));
 }
 
 function showContent(type){
@@ -167,7 +170,7 @@ function copyReferral(){
 function updateReferralList(){
   const div = document.getElementById('ref-list');
   if(!div) return;
-  const keys = playerData.referrals ? JSON.parse(playerData.referrals) : [];
+  const keys = playerData.referrals || [];
   if(keys.length===0) div.innerText = 'Пока нет рефералов';
   else { div.innerHTML = '<ul>' + keys.map(k=>`<li>${k}</li>`).join('') + '</ul>'; }
 }
@@ -186,20 +189,24 @@ function buyLand(index){
   showContent('shop');
 }
 
-// Сохраняем данные игрока на сервере
 function savePlayerData(){
   fetch(`${SERVER}/api/save/${playerData.id}`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({BR: playerData.BR, balance: playerData.balance, level: playerData.level, lands, referrals: playerData.referrals})
-  });
+    body:JSON.stringify({
+      BR: playerData.BR,
+      balance: playerData.balance,
+      level: playerData.level,
+      lands,
+      referrals: playerData.referrals
+    })
+  })
+  .catch(err=>console.log('Ошибка сохранения данных:', err));
 }
 
 // Энергия реген
 document.addEventListener('DOMContentLoaded', ()=>{
-  setInterval(()=>{
-    if(energy < maxEnergy) { energy++; updateEnergyDisplay(); }
-  },5000);
+  setInterval(()=>{ if(energy < maxEnergy) { energy++; updateEnergyDisplay(); } },5000);
 
   const palace = document.querySelector('.emoji-circle');
   const energyDisplay = document.createElement('div');
