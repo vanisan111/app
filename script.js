@@ -1,9 +1,7 @@
-let balance = 10;
-let BR = 100;
-let level = 0;
-let playerID = Math.floor(Math.random()*90000 + 10000);
-let referrals = {};
+let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
+let energy = 100;
+const maxEnergy = 100;
 
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
@@ -18,7 +16,6 @@ function backToChoice(){
 }
 
 function renderLevel(current, max=10){
-  level = current;
   const bar = document.getElementById('level-bar');
   const progress = document.getElementById('level-progress');
   bar.innerHTML = '';
@@ -32,54 +29,77 @@ function renderLevel(current, max=10){
 }
 
 function updateBR(){
-  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + BR.toFixed(1);
+  document.getElementById('navbar-br').innerText = '⚔️ BR: ' + playerData.BR.toFixed(1);
 }
 
 function login(){
-  const username = document.getElementById('login-username').value || 'Игрок';
-  document.getElementById('navbar-username').innerText = '👤 ' + username;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+
+  fetch('http://localhost:3000/api/login', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username,password})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error) alert(data.error);
+    else {
+      playerData = data;
+      lands = playerData.lands ? JSON.parse(playerData.lands) : lands;
+      document.getElementById('navbar-username').innerText = '👤 ' + playerData.username + ' [' + (playerData.alliance||'-') + ']';
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('main-screen').style.display='flex';
+      renderLevel(playerData.level);
+      updateBR();
+    }
+  });
 }
 
 function register(){
-  const username = document.getElementById('reg-username').value || 'Игрок';
-  const alliance = document.getElementById('reg-alliance').value || '-';
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){ referrals[refID] = username; }
-  document.getElementById('navbar-username').innerText = '👤 ' + username + ' [' + alliance + ']';
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('main-screen').style.display = 'flex';
-  renderLevel(0,10);
-  updateBR();
+  const username = document.getElementById('reg-username').value;
+  const password = document.getElementById('reg-password').value;
+  const alliance = document.getElementById('reg-alliance').value;
+
+  fetch('http://localhost:3000/api/register', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username,password,alliance})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error) alert(data.error);
+    else {
+      alert('Регистрация успешна! Теперь войдите.');
+      backToChoice();
+    }
+  });
 }
 
 function showContent(type){
+  if(!playerData) return alert('Сначала войдите в игру!');
   const contentBox = document.getElementById('content-box');
   contentBox.innerHTML = '<div id="main-text"></div>';
   const mainText = document.getElementById('main-text');
 
   if(type === 'palace'){
     mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
-      👤 Имя: ${document.getElementById("navbar-username").innerText.replace("👤 ","")}<br>
+      👤 Имя: ${playerData.username}<br>
       🤝 Рефер мастер: - <br>
-      💰 Баланс (TON): ${balance}<br>
-      📅 Дата регистрации: ${new Date().toLocaleDateString()}<br>
-      🆔 Telegram ID: #${playerID}<br>
-      ⚔️ BR: ${BR.toFixed(1)}`;
+      💰 Баланс (TON): ${playerData.balance}<br>
+      📅 Дата регистрации: ${new Date(playerData.created_at).toLocaleDateString()}<br>
+      🆔 ID: #${playerData.id}<br>
+      ⚔️ BR: ${playerData.BR.toFixed(1)}`;
   }
   else if(type === 'referrals'){
     mainText.innerHTML = `👥 <b>Рефералы</b><br><br>
-      Ваш ID: <input type="text" id="player-id" value="${playerID}" readonly style="width:120px;">
+      Ваш ID: <input type="text" id="player-id" value="${playerData.id}" readonly style="width:120px;">
       <button onclick="copyReferral()">Копировать ссылку</button>
       <div id="ref-list" style="margin-top:10px;"></div>`;
     updateReferralList();
   }
   else if(type === 'balance'){
-    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${balance} TON.`;
+    mainText.innerHTML = `💰 <b>Баланс</b><br><br> Ваш баланс: ${playerData.balance} TON.`;
     const sub = document.createElement('div');
     sub.className = 'sub-buttons';
     sub.innerHTML = `<button onclick="withdraw()">Вывод</button><button onclick="deposit()">Пополнение</button>`;
@@ -101,8 +121,7 @@ function showContent(type){
     shopDiv.innerHTML = `
       <button onclick="buyItem(1,0.5,'Укрепление дворца')">🏰 Укрепление дворца (1 TON → +0.5% BR)</button>
       <button onclick="buyItem(2,1.5,'Тренировка армии')">⚔️ Тренировка армии (2 TON → +1.5% BR)</button>
-      <button onclick="buyItem(3,5,'Магическая защита')">🔮 Магическая защита (3 TON → +5% BR)</button>
-    `;
+      <button onclick="buyItem(3,5,'Магическая защита')">🔮 Магическая защита (3 TON → +5% BR)</button>`;
     contentBox.appendChild(shopDiv);
 
     const grid = document.createElement('div');
@@ -125,94 +144,86 @@ function showContent(type){
       При игре он получает феод в распоряжение.<br>
       Максимум 10 рефералов без возможности вывода средств TON.<br>
       Для вывода нужно стать бароном - донат 7 TON.<br>
-      Так же есть внутриигровые покупки и NFT торговля.`;
+      Также есть внутриигровые покупки и NFT торговля.`;
   }
 }
 
 function buyItem(cost, percent, name){
-  if(balance < cost){ alert('Недостаточно TON'); return; }
-  balance -= cost;
-  BR += BR * (percent/100);
+  if(playerData.balance < cost){ alert('Недостаточно TON'); return; }
+  playerData.balance -= cost;
+  playerData.BR += playerData.BR * (percent/100);
   updateBR();
+  savePlayerData();
   alert('Куплено: ' + name);
   showContent('shop');
 }
 
 function copyReferral(){
-  const link = `${window.location.origin}${window.location.pathname}?ref=${playerID}`;
+  const link = `${window.location.origin}${window.location.pathname}?ref=${playerData.id}`;
   navigator.clipboard.writeText(link).then(()=>alert('Ссылка скопирована в буфер'));
 }
+
 function updateReferralList(){
   const div = document.getElementById('ref-list');
   if(!div) return;
-  const keys = Object.keys(referrals);
+  const keys = playerData.referrals || [];
   if(keys.length===0) div.innerText = 'Пока нет рефералов';
-  else { div.innerHTML = '<ul>' + keys.map(k=>`<li>${k} → ${referrals[k]}</li>`).join('') + '</ul>'; }
+  else { div.innerHTML = '<ul>' + keys.map(k=>`<li>${k}</li>`).join('') + '</ul>'; }
 }
 
 function withdraw(){ alert('Вывод средств (демо)'); }
-function deposit(){ balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
-
+function deposit(){ playerData.balance += 5; alert('Пополнение +5 TON'); showContent('balance'); }
 function buyLand(index){
   if(lands[index]) return;
   const ownedCount = lands.filter(x=>x).length;
   const cost = 5 * ownedCount;
-  if(balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
-  balance -= cost;
+  if(playerData.balance < cost){ alert('Недостаточно TON для покупки земли!'); return; }
+  playerData.balance -= cost;
   lands[index] = true;
+  savePlayerData();
   alert(`Куплено поле #${index+1} за ${cost} TON`);
   showContent('shop');
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  const urlParams = new URLSearchParams(window.location.search);
-  const refID = urlParams.get('ref');
-  if(refID){
-    if(referrals[refID]){ console.log('Ref param', refID, 'is known:', referrals[refID]); }
-    else { console.log('Ref param present but unknown:', refID); }
-  }
-
-let energy = 100;
-const maxEnergy = 100;
+// Сохраняем данные игрока на сервере
+function savePlayerData(){
+  fetch(`http://localhost:3000/api/save/${playerData.id}`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({BR: playerData.BR, balance: playerData.balance, level: playerData.level, lands})
+  });
+}
 
 // Энергия реген
-setInterval(()=>{
-  if(energy < maxEnergy) {
-    energy++;
-    updateEnergyDisplay();
-  }
-}, 5000);
+document.addEventListener('DOMContentLoaded', ()=>{
+  setInterval(()=>{
+    if(energy < maxEnergy) { energy++; updateEnergyDisplay(); }
+  },5000);
 
-// Создаем элемент для отображения энергии
-const palace = document.querySelector('.emoji-circle');
-const energyDisplay = document.createElement('div');
-energyDisplay.id = 'energy-display';
-energyDisplay.innerText = `⚡ Энергия: ${energy}`;
-palace.appendChild(energyDisplay);
-
-function updateEnergyDisplay(){
+  const palace = document.querySelector('.emoji-circle');
+  const energyDisplay = document.createElement('div');
+  energyDisplay.id = 'energy-display';
   energyDisplay.innerText = `⚡ Энергия: ${energy}`;
-}
+  palace.appendChild(energyDisplay);
 
-// Функция тапа по дворцу
-palace.addEventListener('click', ()=>{
-  if(energy < 2) { alert('Недостаточно энергии!'); return; }
-  energy -= 2;
-  BR += 0.05;
-  updateEnergyDisplay();
-  updateBR();
-  showSwordAnimation();
+  function updateEnergyDisplay(){ energyDisplay.innerText = `⚡ Энергия: ${energy}`; }
+
+  palace.addEventListener('click', ()=>{
+    if(energy < 2) { alert('Недостаточно энергии!'); return; }
+    energy -= 2;
+    playerData.BR += 0.05;
+    updateEnergyDisplay();
+    updateBR();
+    showSwordAnimation();
+    savePlayerData();
+  });
+
+  function showSwordAnimation(){
+    const sword = document.createElement('div');
+    sword.className = 'sword-tap';
+    sword.innerText = '⚔️';
+    sword.style.left = (50 + (Math.random()*40-20)) + '%';
+    palace.appendChild(sword);
+    setTimeout(()=>{ sword.remove(); },800);
+  }
 });
-
-// Анимация мечей
-function showSwordAnimation(){
-  const sword = document.createElement('div');
-  sword.className = 'sword-tap';
-  sword.innerText = '⚔️';
-  sword.style.left = (50 + (Math.random()*40-20)) + '%'; // немного рандомим позицию
-  palace.appendChild(sword);
-  setTimeout(()=>{ sword.remove(); }, 800);
-}
-
-});
-
