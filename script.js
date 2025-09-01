@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://4878ed392d6a.ngrok-free.app'; // <- сюда вставь HTTPS ссылку ngrok
+const SERVER = 'https://4878ed392d6a.ngrok-free.app'; // твой ngrok HTTPS
 
 // === UI переключения экранов ===
 function showForm(type){
@@ -10,6 +10,7 @@ function showForm(type){
   if(type === 'login') document.getElementById('login-screen').style.display='flex';
   else document.getElementById('register-screen').style.display='flex';
 }
+
 function backToChoice(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('register-screen').style.display='none';
@@ -40,7 +41,6 @@ function updateBR(){
 function login(){
   const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
-
   fetch(`${SERVER}/api/login`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -68,7 +68,6 @@ function register(){
   const username = document.getElementById('reg-username').value;
   const password = document.getElementById('reg-password').value;
   const alliance = document.getElementById('reg-alliance').value;
-
   fetch(`${SERVER}/api/register`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -77,10 +76,7 @@ function register(){
   .then(res=>res.json())
   .then(data=>{
     if(data.error) alert(data.error);
-    else {
-      alert('Регистрация успешна! Теперь войдите.');
-      backToChoice();
-    }
+    else { alert('Регистрация успешна! Теперь войдите.'); backToChoice(); }
   })
   .catch(err=>alert('Ошибка соединения с сервером'));
 }
@@ -95,7 +91,7 @@ function showContent(type){
   if(type === 'palace'){
     mainText.innerHTML = `ℹ️ <b>Дворец</b><br><br>
       👤 Имя: ${playerData.username}<br>
-      🤝 Рефер мастер: - <br>
+      🤝 Рефер мастер: -<br>
       💰 Баланс (TON): ${playerData.balance}<br>
       📅 Дата регистрации: ${new Date(playerData.created_at).toLocaleDateString()}<br>
       🆔 ID: #${playerData.id}<br>
@@ -117,13 +113,18 @@ function showContent(type){
   }
   else if(type === 'rating'){
     mainText.innerHTML = `🏆 <b>Рейтинг</b><br><br>`;
-    fetch(`${SERVER}/api/rating`) // <- сервер должен отдавать всех пользователей с сортировкой по BR
+    fetch(`${SERVER}/api/rating`)
       .then(res=>res.json())
       .then(users=>{
         const table = document.createElement('table');
         table.innerHTML = `<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
           <tbody>
-          ${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${u.BR.toFixed(1)}</td><td>${u.balance}</td></tr>`).join('')}
+          ${users.map((u,i)=>`<tr>
+            <td>${i+1}</td>
+            <td>${u.username}</td>
+            <td>${u.BR.toFixed(1)}</td>
+            <td>${u.balance}</td>
+          </tr>`).join('')}
           </tbody>`;
         contentBox.appendChild(table);
       });
@@ -172,6 +173,7 @@ function buyItem(cost, percent, name){
   alert('Куплено: ' + name);
   showContent('shop');
 }
+
 function buyLand(index){
   if(lands[index]) return;
   const ownedCount = lands.filter(x=>x).length;
@@ -190,14 +192,19 @@ function savePlayerData(){
   fetch(`${SERVER}/api/save/${playerData.id}`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      BR: playerData.BR,
-      balance: playerData.balance,
-      level: playerData.level,
-      lands,
-      referrals: playerData.referrals
+    body: JSON.stringify({
+      BR: playerData.BR || 100,
+      balance: playerData.balance || 0,
+      level: playerData.level || 1,
+      lands: JSON.stringify(lands),
+      referrals: JSON.stringify(playerData.referrals || [])
     })
-  }).catch(err=>console.error('Ошибка сохранения', err));
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error) console.error('Ошибка сервера при сохранении:', data.error);
+  })
+  .catch(err=>console.error('Ошибка сохранения:', err));
 }
 
 // === Рефералы ===
@@ -205,12 +212,15 @@ function copyReferral(){
   const link = `${window.location.origin}${window.location.pathname}?ref=${playerData.id}`;
   navigator.clipboard.writeText(link).then(()=>alert('Ссылка скопирована в буфер'));
 }
+
 function updateReferralList(){
   const div = document.getElementById('ref-list');
   if(!div) return;
   const keys = playerData.referrals || [];
   if(keys.length===0) div.innerText = 'Пока нет рефералов';
-  else { div.innerHTML = '<ul>' + keys.map(k=>`<li>${k}</li>`).join('') + '</ul>'; }
+  else {
+    div.innerHTML = '<ul>' + keys.map(k=>`<li>${k}</li>`).join('') + '</ul>';
+  }
 }
 
 // === Пополнение / вывод ===
@@ -250,4 +260,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ sword.remove(); },800);
   }
 });
-
