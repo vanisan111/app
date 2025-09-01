@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://YOUR_NGROK_URL_HERE'; // <- сюда вставь HTTPS ссылку ngrok
+const SERVER = 'https://4878ed392d6a.ngrok-free.app'; // <- сюда вставь HTTPS ссылку ngrok
 
 // === UI переключения экранов ===
 function showForm(type){
@@ -250,3 +250,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ sword.remove(); },800);
   }
 });
+
