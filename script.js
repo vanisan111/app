@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'http://37.53.92.226:3000'; // твой внешний IP с портом
+const SERVER = 'https://e71ac9d04bab.ngrok-free.app'; // твой ngrok публичный URL
 
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
@@ -189,24 +189,18 @@ function buyLand(index){
   showContent('shop');
 }
 
+// Сохраняем данные игрока на сервере
 function savePlayerData(){
   fetch(`${SERVER}/api/save/${playerData.id}`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      BR: playerData.BR,
-      balance: playerData.balance,
-      level: playerData.level,
-      lands,
-      referrals: playerData.referrals
-    })
-  })
-  .catch(err=>console.log('Ошибка сохранения данных:', err));
+    body:JSON.stringify({BR: playerData.BR, balance: playerData.balance, level: playerData.level, lands, referrals: playerData.referrals})
+  });
 }
 
 // Энергия реген
 document.addEventListener('DOMContentLoaded', ()=>{
-  setInterval(()=>{ if(energy < maxEnergy) { energy++; updateEnergyDisplay(); } },5000);
+  setInterval(()=>{ if(energy < maxEnergy){ energy++; updateEnergyDisplay(); } },5000);
 
   const palace = document.querySelector('.emoji-circle');
   const energyDisplay = document.createElement('div');
