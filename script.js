@@ -2,6 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
+const SERVER = 'http://37.53.92.226:3000'; // твой внешний IP
 
 function showForm(type){
   document.getElementById('auth-choice-screen').style.display='none';
@@ -36,7 +37,7 @@ function login(){
   const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
 
-  fetch('http://localhost:3000/api/login', {
+  fetch(`${SERVER}/api/login`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({username,password})
@@ -61,7 +62,7 @@ function register(){
   const password = document.getElementById('reg-password').value;
   const alliance = document.getElementById('reg-alliance').value;
 
-  fetch('http://localhost:3000/api/register', {
+  fetch(`${SERVER}/api/register`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({username,password,alliance})
@@ -166,7 +167,7 @@ function copyReferral(){
 function updateReferralList(){
   const div = document.getElementById('ref-list');
   if(!div) return;
-  const keys = playerData.referrals || [];
+  const keys = playerData.referrals ? JSON.parse(playerData.referrals) : [];
   if(keys.length===0) div.innerText = 'Пока нет рефералов';
   else { div.innerHTML = '<ul>' + keys.map(k=>`<li>${k}</li>`).join('') + '</ul>'; }
 }
@@ -187,10 +188,10 @@ function buyLand(index){
 
 // Сохраняем данные игрока на сервере
 function savePlayerData(){
-  fetch(`http://localhost:3000/api/save/${playerData.id}`, {
+  fetch(`${SERVER}/api/save/${playerData.id}`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({BR: playerData.BR, balance: playerData.balance, level: playerData.level, lands})
+    body:JSON.stringify({BR: playerData.BR, balance: playerData.balance, level: playerData.level, lands, referrals: playerData.referrals})
   });
 }
 
