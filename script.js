@@ -6,7 +6,7 @@ const SERVER = 'let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://empty-dolls-make.loca.lt'; // Вставь свой HTTPS URL ngrok
+const SERVER = 'https://icy-teams-kick.loca.lt'; // Вставь свой HTTPS URL ngrok
 
 // === UI ===
 function showForm(type){
@@ -503,5 +503,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     setTimeout(()=>sword.remove(),800);
   }
 });
+
 
 
