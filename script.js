@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://57e4ad5b791e.ngrok-free.app'; // Твой ngrok URL
+const SERVER = 'https://57e4ad5b791e.ngrok-free.app';
 
 // === UI ===
 function showForm(type){
@@ -88,29 +88,6 @@ function register(){
   .catch(err=>alert('Ошибка соединения с сервером'));
 }
 
-// === Покупки ===
-function buyItem(cost, percent, name){
-  if(playerData.balance<cost){ alert('Недостаточно TON'); return; }
-  playerData.balance-=cost;
-  playerData.BR+=(playerData.BR || 100)*(percent/100);
-  updateBR();
-  savePlayerData();
-  alert('Куплено: '+name);
-  showContent('shop');
-}
-
-function buyLand(index){
-  if(lands[index]) return;
-  const ownedCount = lands.filter(x=>x).length;
-  const cost = 5 * ownedCount;
-  if(playerData.balance<cost){ alert('Недостаточно TON'); return; }
-  playerData.balance-=cost;
-  lands[index]=true;
-  savePlayerData();
-  alert(`Куплено поле #${index+1} за ${cost} TON`);
-  showContent('shop');
-}
-
 // === Сохраняем данные на сервер ===
 function savePlayerData(){
   if(!playerData || !playerData.id) return;
@@ -164,6 +141,7 @@ function showContent(type){
     fetch(`${SERVER}/api/rating`)
       .then(res=>res.json())
       .then(users=>{
+        users.sort((a,b)=>b.BR-a.BR); // Сортировка по BR
         const table=document.createElement('table');
         table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
           <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
@@ -217,6 +195,29 @@ function updateReferralList(){
 // === Пополнение/вывод ===
 function withdraw(){ alert('Вывод (демо)'); }
 function deposit(){ playerData.balance=(playerData.balance||0)+5; alert('Пополнение +5 TON'); showContent('balance'); }
+
+// === Покупки ===
+function buyItem(cost, percent, name){
+  if(playerData.balance<cost){ alert('Недостаточно TON'); return; }
+  playerData.balance-=cost;
+  playerData.BR+=(playerData.BR || 100)*(percent/100);
+  updateBR();
+  savePlayerData();
+  alert('Куплено: '+name);
+  showContent('shop');
+}
+
+function buyLand(index){
+  if(lands[index]) return;
+  const ownedCount = lands.filter(x=>x).length;
+  const cost = 5 * ownedCount;
+  if(playerData.balance<cost){ alert('Недостаточно TON'); return; }
+  playerData.balance-=cost;
+  lands[index]=true;
+  savePlayerData();
+  alert(`Куплено поле #${index+1} за ${cost} TON`);
+  showContent('shop');
+}
 
 // === Энергия и клики по дворцу ===
 document.addEventListener('DOMContentLoaded',()=>{
