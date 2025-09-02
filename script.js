@@ -151,6 +151,10 @@ function showContent(type){
     fetch(`${SERVER}/api/rating`)
       .then(res=>{
         if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+        const contentType = res.headers.get("content-type");
+        if(!contentType || !contentType.includes("application/json")){
+          throw new Error("Ответ сервера не JSON");
+        }
         return res.json();
       })
       .then(users=>{
@@ -160,7 +164,7 @@ function showContent(type){
         contentBox.appendChild(table);
       })
       .catch(err=>{
-        mainText.innerHTML=`Ошибка загрузки рейтинга: ${err.message}`;
+        mainText.innerText=`Ошибка загрузки рейтинга: ${err.message}`;
       });
   } else if(type==='shop'){
     mainText.innerHTML=`🛒 Магазин<br><br>`;
@@ -237,9 +241,7 @@ function buyLand(index){
 
 // === Энергия и клики по дворцу ===
 document.addEventListener('DOMContentLoaded',()=>{
-  setInterval(()=>{
-    if(energy<maxEnergy){ energy++; updateEnergyDisplay(); }
-  },5000);
+  setInterval(()=>{ if(energy<maxEnergy){ energy++; updateEnergyDisplay(); } },5000);
 
   const palace=document.querySelector('.emoji-circle');
   const energyDisplay=document.createElement('div');
