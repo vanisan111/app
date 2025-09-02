@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://34da528728b7.ngrok-free.app';
+const SERVER = 'https://c3a269c94b76.ngrok-free.app'; // <-- обновленный URL ngrok
 
 // === UI ===
 function showForm(type){
@@ -148,16 +148,8 @@ function showContent(type){
   } else if(type==='rating'){
     mainText.innerHTML=`🏆 Рейтинг<br><br>`;
     fetch(`${SERVER}/api/rating`)
-      .then(res => res.text()) // получаем текст, чтобы избежать ошибки "<!DOCTYPE ..."
-      .then(text => {
-        let users = [];
-        try {
-          users = JSON.parse(text);
-        } catch(e) {
-          mainText.innerHTML=`Ошибка загрузки рейтинга: неверный ответ сервера`;
-          console.error('Ошибка JSON:', e, 'Ответ сервера:', text);
-          return;
-        }
+      .then(res => res.json())
+      .then(users => {
         const table=document.createElement('table');
         table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
           <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
@@ -225,7 +217,6 @@ function buyItem(cost, percent, name){
   alert('Куплено: '+name);
   showContent('shop');
 }
-
 function buyLand(index){
   if(lands[index]) return;
   const ownedCount = lands.filter(x=>x).length;
@@ -271,4 +262,3 @@ document.addEventListener('DOMContentLoaded',()=>{
     setTimeout(()=>sword.remove(),800);
   }
 });
-
