@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://57e4ad5b791e.ngrok-free.app';
+const SERVER = 'https://34da528728b7.ngrok-free.app';
 
 // === UI ===
 function showForm(type){
@@ -271,3 +271,4 @@ document.addEventListener('DOMContentLoaded',()=>{
     setTimeout(()=>sword.remove(),800);
   }
 });
+
