@@ -2,7 +2,7 @@ let playerData = null;
 let lands = [true,false,false,false,false,false,false,false,false];
 let energy = 100;
 const maxEnergy = 100;
-const SERVER = 'https://c3a269c94b76.ngrok-free.app'; // <-- обновленный URL ngrok
+const SERVER = 'https://c3a269c94b76.ngrok-free.app'; // твой актуальный ngrok URL
 
 // === UI ===
 function showForm(type){
@@ -10,6 +10,7 @@ function showForm(type){
   if(type==='login') document.getElementById('login-screen').style.display='flex';
   else document.getElementById('register-screen').style.display='flex';
 }
+
 function backToChoice(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('register-screen').style.display='none';
@@ -148,8 +149,11 @@ function showContent(type){
   } else if(type==='rating'){
     mainText.innerHTML=`🏆 Рейтинг<br><br>`;
     fetch(`${SERVER}/api/rating`)
-      .then(res => res.json())
-      .then(users => {
+      .then(res=>{
+        if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
+        return res.json();
+      })
+      .then(users=>{
         const table=document.createElement('table');
         table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
           <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
@@ -195,6 +199,7 @@ function copyReferral(){
   navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?ref=${playerData.id}`)
     .then(()=>alert('Ссылка скопирована'));
 }
+
 function updateReferralList(){
   const div=document.getElementById('ref-list');
   if(!div) return;
@@ -217,6 +222,7 @@ function buyItem(cost, percent, name){
   alert('Куплено: '+name);
   showContent('shop');
 }
+
 function buyLand(index){
   if(lands[index]) return;
   const ownedCount = lands.filter(x=>x).length;
