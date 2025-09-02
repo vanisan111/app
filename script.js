@@ -149,18 +149,29 @@ function showContent(type){
   } else if(type==='rating'){
     mainText.innerHTML=`🏆 Рейтинг<br><br>`;
     fetch(`${SERVER}/api/rating`)
-      .then(res=>{
+      .then(async res=>{
         if(!res.ok) throw new Error(`Сервер вернул ${res.status}`);
         const contentType = res.headers.get("content-type");
         if(!contentType || !contentType.includes("application/json")){
-          throw new Error("Ответ сервера не JSON");
+          const text = await res.text();
+          throw new Error("Ответ сервера не JSON: "+text.slice(0,200));
         }
         return res.json();
       })
       .then(users=>{
-        const table=document.createElement('table');
-        table.innerHTML=`<thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
-          <tbody>${users.map((u,i)=>`<tr><td>${i+1}</td><td>${u.username}</td><td>${(u.BR||0).toFixed(1)}</td><td>${u.balance||0}</td></tr>`).join('')}</tbody>`;
+        if(!Array.isArray(users)) throw new Error("Неверный формат данных рейтинга");
+        const table = document.createElement('table');
+        table.innerHTML=`
+          <thead><tr><th>№</th><th>Имя</th><th>BR</th><th>Баланс</th></tr></thead>
+          <tbody>
+            ${users.map((u,i)=>`<tr>
+              <td>${i+1}</td>
+              <td>${u.username}</td>
+              <td>${(u.BR||0).toFixed(1)}</td>
+              <td>${u.balance||0}</td>
+            </tr>`).join('')}
+          </tbody>`;
+        contentBox.innerHTML='🏆 Рейтинг<br><br>';
         contentBox.appendChild(table);
       })
       .catch(err=>{
